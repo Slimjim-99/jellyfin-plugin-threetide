@@ -18,6 +18,7 @@ public static class IndexHtmlTransformation
     public static object Transform(object state)
     {
         string contents = ExtractContents(state);
+
         PluginConfiguration configuration =
             Plugin.Instance?.Configuration ?? new PluginConfiguration();
 
@@ -26,57 +27,106 @@ public static class IndexHtmlTransformation
             return new { contents };
         }
 
-        List<string> styles = [Plugin.ReadEmbeddedText("theme.css")];
+        List<string> styles =
+        [
+            Plugin.ReadEmbeddedText("theme.css")
+        ];
+
+        // Dynamische Werte aus den Plugin-Einstellungen:
+        // Logo und Markenfarbe.
+        string brandingCss = Plugin.BrandingService.BuildCss();
+
+        if (!string.IsNullOrWhiteSpace(brandingCss))
+        {
+            styles.Add(brandingCss);
+        }
 
         if (configuration.EnablePlayerTheme)
         {
-            styles.Add(Plugin.ReadEmbeddedText("player.css"));
+            styles.Add(
+                Plugin.ReadEmbeddedText("player.css"));
         }
 
         if (configuration.EnableLiveTvTheme)
         {
-            styles.Add(Plugin.ReadEmbeddedText("livetv.css"));
+            styles.Add(
+                Plugin.ReadEmbeddedText("livetv.css"));
         }
 
-        string browserConfiguration = JsonSerializer.Serialize(new
-        {
-            enableSeerrButton = configuration.EnableSeerrButton,
-            seerrUrl = NormalizeUrl(configuration.SeerrUrl),
-            label = string.IsNullOrWhiteSpace(configuration.SeerrButtonLabel)
-                ? "Anfragen"
-                : configuration.SeerrButtonLabel.Trim(),
-            position = configuration.SeerrButtonPosition.ToString().ToLowerInvariant(),
-            openInNewTab = configuration.OpenSeerrInNewTab
-        });
+        string browserConfiguration = JsonSerializer.Serialize(
+            new
+            {
+                enableSeerrButton =
+                    configuration.EnableSeerrButton,
+
+                seerrUrl =
+                    NormalizeUrl(configuration.SeerrUrl),
+
+                label =
+                    string.IsNullOrWhiteSpace(
+                        configuration.SeerrButtonLabel)
+                        ? "Anfragen"
+                        : configuration.SeerrButtonLabel.Trim(),
+
+                position =
+                    configuration.SeerrButtonPosition
+                        .ToLowerInvariant(),
+
+                openInNewTab =
+                    configuration.OpenSeerrInNewTab,
+
+                brandName =
+                    Plugin.BrandingService.BrandName,
+
+                brandColor =
+                    Plugin.BrandingService.BrandColor,
+
+                logoUrl =
+                    Plugin.BrandingService.LogoUrl
+            });
 
         string injection =
             "<style id=\"threetide-theme\">" +
-            string.Join(Environment.NewLine, styles) +
-            "</style><script id=\"threetide-bootstrap\">window.__THREETIDE_CONFIG__=" +
+            string.Join(
+                Environment.NewLine,
+                styles) +
+            "</style>" +
+            "<script id=\"threetide-bootstrap\">" +
+            "window.__THREETIDE_CONFIG__=" +
             browserConfiguration +
             ";" +
             Plugin.ReadEmbeddedText("runtime.js") +
             "</script>";
 
-        int bodyEnd = contents.LastIndexOf("</body>", StringComparison.OrdinalIgnoreCase);
+        int bodyEnd = contents.LastIndexOf(
+            "</body>",
+            StringComparison.OrdinalIgnoreCase);
+
         string patchedContents = bodyEnd >= 0
             ? contents.Insert(bodyEnd, injection)
             : contents + injection;
 
-        return new { contents = patchedContents };
+        return new
+        {
+            contents = patchedContents
+        };
     }
 
     private static string ExtractContents(object state)
     {
         if (state is JsonElement element &&
-            element.TryGetProperty("contents", out JsonElement contentsElement))
+            element.TryGetProperty(
+                "contents",
+                out JsonElement contentsElement))
         {
-            return contentsElement.GetString() ?? string.Empty;
+            return contentsElement.GetString()
+                ?? string.Empty;
         }
 
         if (state is JsonObject jsonObject)
         {
-            return jsonObject["contents"]?.GetValue<string>() ?? string.Empty;
+            return jsonObject["contents"]?.GetValue<string>()
+                ?? string.Empty;
         }
 
         PropertyInfo? property = state.GetType().GetProperty(
@@ -85,17 +135,24 @@ public static class IndexHtmlTransformation
             BindingFlags.Public |
             BindingFlags.IgnoreCase);
 
-        return property?.GetValue(state)?.ToString() ?? string.Empty;
+        return property?.GetValue(state)?.ToString()
+            ?? string.Empty;
     }
 
     private static string NormalizeUrl(string value)
     {
         string trimmed = value.Trim();
 
-        if (Uri.TryCreate(trimmed, UriKind.Absolute, out Uri? uri) &&
-            (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+        if (Uri.TryCreate(
+                trimmed,
+                UriKind.Absolute,
+                out Uri? uri) &&
+            (uri.Scheme == Uri.UriSchemeHttp ||
+             uri.Scheme == Uri.UriSchemeHttps))
         {
-            return uri.ToString().TrimEnd('/');
+            return uri
+                .ToString()
+                .TrimEnd('/');
         }
 
         return string.Empty;

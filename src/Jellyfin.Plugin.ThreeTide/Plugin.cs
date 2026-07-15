@@ -1,10 +1,11 @@
+using System.Globalization;
 using Jellyfin.Plugin.ThreeTide.Configuration;
 using Jellyfin.Plugin.ThreeTide.Services;
+using Jellyfin.Plugin.ThreeTide.Services.Branding;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
-using System.Globalization;
 
 namespace Jellyfin.Plugin.ThreeTide;
 
@@ -18,12 +19,23 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     /// </summary>
     /// <param name="applicationPaths">Application paths.</param>
     /// <param name="xmlSerializer">XML serializer.</param>
-    public Plugin(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer)
+    public Plugin(
+        IApplicationPaths applicationPaths,
+        IXmlSerializer xmlSerializer)
         : base(applicationPaths, xmlSerializer)
     {
         Instance = this;
+
         ConfigurationService = new ConfigurationService();
-        ThemeService = new ThemeService(ConfigurationService);
+
+        ThemeService = new ThemeService(
+            ConfigurationService);
+
+        LogoManager logoManager = new();
+
+        BrandingService = new BrandingService(
+            ConfigurationService,
+            logoManager);
     }
 
     /// <inheritdoc />
@@ -34,15 +46,41 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
         "3Tide branding, player-safe theme, Live TV styling and optional Seerr navigation.";
 
     /// <inheritdoc />
-    public override Guid Id => Guid.Parse("7f91b8a5-0cd1-4e71-a379-70d820dcdac5");
+    public override Guid Id =>
+        Guid.Parse("7f91b8a5-0cd1-4e71-a379-70d820dcdac5");
 
     /// <summary>
     /// Gets the current plugin instance.
     /// </summary>
     public static Plugin? Instance { get; private set; }
-    public static IConfigurationService ConfigurationService { get; private set; } = null!;
 
-    public static IThemeService ThemeService { get; private set; } = null!;
+    /// <summary>
+    /// Gets the configuration service.
+    /// </summary>
+    public static IConfigurationService ConfigurationService
+    {
+        get;
+        private set;
+    } = null!;
+
+    /// <summary>
+    /// Gets the theme service.
+    /// </summary>
+    public static IThemeService ThemeService
+    {
+        get;
+        private set;
+    } = null!;
+
+    /// <summary>
+    /// Gets the branding service.
+    /// </summary>
+    public static IBrandingService BrandingService
+    {
+        get;
+        private set;
+    } = null!;
+
     /// <inheritdoc />
     public IEnumerable<PluginPageInfo> GetPages()
     {
@@ -67,19 +105,27 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     public static string ReadEmbeddedText(string fileName)
     {
         string suffix = ".Web." + fileName;
+
         string? resourceName = typeof(Plugin).Assembly
             .GetManifestResourceNames()
-            .FirstOrDefault(name => name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase));
+            .FirstOrDefault(
+                name => name.EndsWith(
+                    suffix,
+                    StringComparison.OrdinalIgnoreCase));
 
         if (resourceName is null)
         {
-            throw new InvalidOperationException($"Embedded resource '{fileName}' was not found.");
+            throw new InvalidOperationException(
+                $"Embedded resource '{fileName}' was not found.");
         }
 
-        using Stream stream = typeof(Plugin).Assembly.GetManifestResourceStream(resourceName)
-            ?? throw new InvalidOperationException($"Unable to open embedded resource '{resourceName}'.");
+        using Stream stream =
+            typeof(Plugin).Assembly.GetManifestResourceStream(resourceName)
+            ?? throw new InvalidOperationException(
+                $"Unable to open embedded resource '{resourceName}'.");
 
         using StreamReader reader = new(stream);
+
         return reader.ReadToEnd();
     }
 }
