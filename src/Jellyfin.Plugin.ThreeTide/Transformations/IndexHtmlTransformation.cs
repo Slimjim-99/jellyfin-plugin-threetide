@@ -51,6 +51,8 @@ public static class IndexHtmlTransformation
         {
             styles.Add(
                 Plugin.ReadEmbeddedText("livetv.css"));
+            styles.Add(
+                Plugin.ReadEmbeddedText("hero.css"));
         }
 
         string browserConfiguration = JsonSerializer.Serialize(

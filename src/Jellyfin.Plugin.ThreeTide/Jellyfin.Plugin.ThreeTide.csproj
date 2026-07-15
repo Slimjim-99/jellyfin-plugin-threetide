@@ -25,5 +25,7 @@
     <EmbeddedResource Include="Web\player.css" />
     <EmbeddedResource Include="Web\livetv.css" />
     <EmbeddedResource Include="Web\runtime.js" />
+    <EmbeddedResource Include="Web\hero.css" />
+    <EmbeddedResource Include="Web\hero.js" />
   </ItemGroup>
 </Project>
