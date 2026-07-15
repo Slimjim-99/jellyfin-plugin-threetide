@@ -5,21 +5,21 @@ namespace Jellyfin.Plugin.ThreeTide.Services;
 /// <summary>
 /// Verwaltet das 3Tide Theme.
 /// </summary>
-public sealed class ThemeService : IThemeService
+public sealed class ThemeService
 {
-    private readonly IConfigurationService _configuration;
+    private readonly ConfigurationService _configuration;
 
-    public ThemeService(IConfigurationService configuration)
-
+    public ThemeService(ConfigurationService configuration)
     {
-
         _configuration = configuration;
-
     }
 
-    public bool Enabled => _configuration.Configuration.EnableTheme;
+    public bool Enabled =>
+        _configuration.Configuration.EnableTheme;
 
-    public string BrandColor => _configuration.Configuration.BrandColor;
+    public string BrandColor =>
+        _configuration.Configuration.BrandColor;
 
-    public string Logo => _configuration.Configuration.LogoUrl;
+    public string Logo =>
+        _configuration.Configuration.LogoUrl;
 }

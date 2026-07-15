@@ -2,47 +2,44 @@ using MediaBrowser.Model.Plugins;
 
 namespace Jellyfin.Plugin.ThreeTide.Configuration;
 
-/// <summary>
-/// Plugin configuration.
-/// </summary>
-public sealed class PluginConfiguration : BasePluginConfiguration
+public class PluginConfiguration : BasePluginConfiguration
 {
-    /// <summary>Gets or sets a value indicating whether the frontend theme is enabled.</summary>
+    // Theme
     public bool EnableTheme { get; set; } = true;
 
-    /// <summary>Gets or sets a value indicating whether player styling is enabled.</summary>
+    // Kompatibilität mit bestehendem Code
     public bool EnablePlayerTheme { get; set; } = true;
 
-    /// <summary>Gets or sets a value indicating whether Live TV styling is enabled.</summary>
     public bool EnableLiveTvTheme { get; set; } = true;
 
-    /// <summary>Gets or sets a value indicating whether the Seerr button is enabled.</summary>
-    public bool EnableSeerrButton { get; set; }
+    // Player
+    public bool EnablePlayer { get; set; } = true;
 
-    /// <summary>Gets or sets the Seerr URL.</summary>
-    public string SeerrUrl { get; set; } = string.Empty;
+    // Live TV
+    public bool EnableLiveTv { get; set; } = true;
 
-    /// <summary>Gets or sets the Seerr button label.</summary>
+    // Seerr
+    public bool EnableSeerr { get; set; } = true;
+
+    public bool EnableSeerrButton { get; set; } = true;
+
+    public string SeerrUrl { get; set; } = "https://request.3tide.com";
+
     public string SeerrButtonLabel { get; set; } = "Anfragen";
 
-    /// <summary>Gets or sets the Seerr button position.</summary>
-    public SeerrButtonPosition SeerrButtonPosition { get; set; } = SeerrButtonPosition.Sidebar;
+    public string SeerrButtonLocation { get; set; } = "Sidebar";
 
-    /// <summary>Gets or sets a value indicating whether Seerr opens in a new tab.</summary>
+    // Alias für den bestehenden Code
+    public string SeerrButtonPosition
+    {
+        get => SeerrButtonLocation;
+        set => SeerrButtonLocation = value;
+    }
+
     public bool OpenSeerrInNewTab { get; set; } = true;
-}
 
-/// <summary>
-/// Seerr button positions.
-/// </summary>
-public enum SeerrButtonPosition
-{
-    /// <summary>Sidebar only.</summary>
-    Sidebar = 0,
+    // Branding
+    public string BrandColor { get; set; } = "#E50914";
 
-    /// <summary>Header only.</summary>
-    Header = 1,
-
-    /// <summary>Sidebar and header.</summary>
-    Both = 2
+    public string LogoUrl { get; set; } = "/web/assets/logo/3tide.png";
 }
