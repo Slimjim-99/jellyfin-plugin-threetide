@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 dotnet restore .\ThreeTide.Plugin.sln
 dotnet build .\ThreeTide.Plugin.sln -c Release --no-restore
 
-$source = ".\Jellyfin.Plugin.ThreeTide\bin\Release\net9.0"
+$source = ".\src\Jellyfin.Plugin.ThreeTide\bin\Release\net9.0"
 $artifactRoot = ".\artifacts"
 $pluginDir = Join-Path $artifactRoot "3Tide"
 

@@ -39,9 +39,9 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           mkdir -p artifacts/3Tide
-          cp Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.dll artifacts/3Tide/
-          if [ -f Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.pdb ]; then
-            cp Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.pdb artifacts/3Tide/
+          cp src/Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.dll artifacts/3Tide/
+          if [ -f src/Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.pdb ]; then
+            cp src/Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.pdb artifacts/3Tide/
           fi
           cd artifacts/3Tide
           zip -r "../ThreeTide-${VERSION}.zip" .
