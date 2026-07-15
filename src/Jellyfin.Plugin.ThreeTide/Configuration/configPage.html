@@ -8,602 +8,138 @@
      data-role="page"
      class="page type-interior pluginConfigurationPage"
      data-require="emby-input,emby-button,emby-select,emby-checkbox">
-
-    <style>
-        #ThreeTideConfigPage {
-            --tt-red: #e50914;
-            --tt-panel: rgba(255,255,255,.055);
-            --tt-border: rgba(255,255,255,.10);
-            --tt-muted: rgba(255,255,255,.68);
-        }
-
-        #ThreeTideConfigPage .tt-shell {
-            width: min(1050px, calc(100% - 2rem));
-            margin: 0 auto;
-            padding: 2rem 0 5rem;
-        }
-
-        #ThreeTideConfigPage .tt-hero {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            border: 1px solid var(--tt-border);
-            border-radius: 18px;
-            background:
-                radial-gradient(circle at 10% 0%, rgba(229,9,20,.22), transparent 35%),
-                var(--tt-panel);
-        }
-
-        #ThreeTideConfigPage .tt-title {
-            margin: 0;
-            font-size: clamp(2rem, 5vw, 3.3rem);
-            letter-spacing: -.05em;
-        }
-
-        #ThreeTideConfigPage .tt-title span {
-            color: var(--tt-red);
-        }
-
-        #ThreeTideConfigPage .tt-subtitle,
-        #ThreeTideConfigPage .tt-intro {
-            color: var(--tt-muted);
-        }
-
-        #ThreeTideConfigPage .tt-version {
-            padding: .6rem .9rem;
-            border: 1px solid var(--tt-border);
-            border-radius: 999px;
-        }
-
-        #ThreeTideConfigPage .tt-tabs {
-            display: flex;
-            gap: .5rem;
-            overflow-x: auto;
-            padding: .5rem 0 1rem;
-        }
-
-        #ThreeTideConfigPage .tt-tab {
-            flex: none;
-            padding: .7rem 1rem;
-            color: inherit;
-            border: 1px solid var(--tt-border);
-            border-radius: 999px;
-            background: var(--tt-panel);
-            cursor: pointer;
-        }
-
-        #ThreeTideConfigPage .tt-tab.active {
-            color: #fff;
-            border-color: var(--tt-red);
-            background: var(--tt-red);
-        }
-
-        #ThreeTideConfigPage .tt-panel {
-            display: none;
-            padding: 1.5rem;
-            border: 1px solid var(--tt-border);
-            border-radius: 18px;
-            background: var(--tt-panel);
-        }
-
-        #ThreeTideConfigPage .tt-panel.active {
-            display: block;
-        }
-
-        #ThreeTideConfigPage .tt-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0,1fr));
-            gap: 1rem;
-        }
-
-        #ThreeTideConfigPage .tt-card {
-            padding: 1rem;
-            border: 1px solid var(--tt-border);
-            border-radius: 13px;
-            background: rgba(0,0,0,.18);
-        }
-
-        #ThreeTideConfigPage .tt-wide {
-            grid-column: 1 / -1;
-        }
-
-        #ThreeTideConfigPage .tt-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .75rem;
-            margin-top: 1.2rem;
-        }
-
-        #ThreeTideConfigPage .tt-save {
-            background: var(--tt-red) !important;
-        }
-
-        #ThreeTideConfigPage .tt-status {
-            min-height: 1.4rem;
-            margin-top: 1rem;
-            color: var(--tt-muted);
-        }
-
-        #ThreeTideConfigPage .tt-status.ok {
-            color: #65d68a;
-        }
-
-        #ThreeTideConfigPage .tt-status.error {
-            color: #ff6b73;
-        }
-
-        #ThreeTideConfigPage .tt-preview {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        #ThreeTideConfigPage #BrandColorPreview {
-            width: 42px;
-            height: 42px;
-            border: 2px solid #fff;
-            border-radius: 50%;
-            background: var(--tt-red);
-        }
-
-        #ThreeTideConfigPage #LogoPreview {
-            max-width: 220px;
-            max-height: 68px;
-            object-fit: contain;
-        }
-
-        @media (max-width: 760px) {
-            #ThreeTideConfigPage .tt-grid {
-                grid-template-columns: 1fr;
-            }
-
-            #ThreeTideConfigPage .tt-wide {
-                grid-column: auto;
-            }
-
-            #ThreeTideConfigPage .tt-hero {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-        }
-    </style>
-
     <div data-role="content">
-        <div class="content-primary tt-shell">
+        <div class="content-primary">
             <form id="ThreeTideConfigForm">
+                <h1>3Tide</h1>
 
-                <header class="tt-hero">
-                    <div>
-                        <h1 class="tt-title"><span>3</span>Tide</h1>
-                        <p class="tt-subtitle">
-                            Branding, Player, Live-TV und Requests verwalten.
-                        </p>
-                    </div>
-                    <div class="tt-version">v0.2.0-alpha</div>
-                </header>
+                <label class="checkboxContainer">
+                    <input id="EnableTheme" type="checkbox" is="emby-checkbox">
+                    <span>3Tide aktivieren</span>
+                </label>
 
-                <nav class="tt-tabs">
-                    <button type="button" class="tt-tab active" data-tab="general">Allgemein</button>
-                    <button type="button" class="tt-tab" data-tab="appearance">Darstellung</button>
-                    <button type="button" class="tt-tab" data-tab="requests">Requests</button>
-                    <button type="button" class="tt-tab" data-tab="player">Player</button>
-                    <button type="button" class="tt-tab" data-tab="livetv">Live-TV</button>
-                    <button type="button" class="tt-tab" data-tab="about">Info</button>
-                </nav>
+                <label class="checkboxContainer">
+                    <input id="EnablePlayerTheme" type="checkbox" is="emby-checkbox">
+                    <span>Player-Fix und Player-Design aktivieren</span>
+                </label>
 
-                <section class="tt-panel active" data-panel="general">
-                    <h2>Allgemein</h2>
-                    <p class="tt-intro">Aktiviere nur die Module, die du benötigst.</p>
+                <label class="checkboxContainer">
+                    <input id="EnableLiveTvTheme" type="checkbox" is="emby-checkbox">
+                    <span>Live-TV-Design aktivieren</span>
+                </label>
 
-                    <div class="tt-grid">
-                        <div class="tt-card">
-                            <label class="checkboxContainer">
-                                <span class="emby-checkbox-label">
-                                    <input id="EnableTheme" type="checkbox" is="emby-checkbox">
-                                    <span>3Tide aktivieren</span>
-                                </span>
-                            </label>
-                        </div>
+                <h2>Seerr</h2>
 
-                        <div class="tt-card">
-                            <label class="checkboxContainer">
-                                <span class="emby-checkbox-label">
-                                    <input id="EnableSeerrButton" type="checkbox" is="emby-checkbox">
-                                    <span>Request-Button aktivieren</span>
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-                </section>
+                <label class="checkboxContainer">
+                    <input id="EnableSeerrButton" type="checkbox" is="emby-checkbox">
+                    <span>Seerr-Button aktivieren</span>
+                </label>
 
-                <section class="tt-panel" data-panel="appearance">
-                    <h2>Darstellung</h2>
-
-                    <div class="tt-grid">
-                        <div class="tt-card">
-                            <div class="inputContainer">
-                                <label class="inputLabel" for="BrandColor">Markenfarbe</label>
-                                <input id="BrandColor"
-                                       type="text"
-                                       is="emby-input"
-                                       placeholder="#E50914">
-                            </div>
-
-                            <div class="tt-preview">
-                                <span id="BrandColorPreview"></span>
-                                <span>Farbvorschau</span>
-                            </div>
-                        </div>
-
-                        <div class="tt-card">
-                            <div class="inputContainer">
-                                <label class="inputLabel" for="LogoUrl">Logo-URL</label>
-                                <input id="LogoUrl"
-                                       type="text"
-                                       is="emby-input"
-                                       placeholder="/web/assets/logo/3tide.png">
-                            </div>
-
-                            <div class="tt-preview">
-                                <img id="LogoPreview" alt="Logo-Vorschau">
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="tt-panel" data-panel="requests">
-                    <h2>Requests</h2>
-
-                    <div class="tt-grid">
-                        <div class="tt-card tt-wide">
-                            <div class="inputContainer">
-                                <label class="inputLabel" for="SeerrUrl">Seerr-URL</label>
-                                <input id="SeerrUrl"
-                                       type="url"
-                                       is="emby-input"
-                                       placeholder="https://request.3tide.com">
-                            </div>
-                        </div>
-
-                        <div class="tt-card">
-                            <div class="inputContainer">
-                                <label class="inputLabel" for="SeerrButtonLabel">Beschriftung</label>
-                                <input id="SeerrButtonLabel"
-                                       type="text"
-                                       is="emby-input"
-                                       placeholder="Anfragen">
-                            </div>
-                        </div>
-
-                        <div class="tt-card">
-                            <div class="selectContainer">
-                                <label class="selectLabel" for="SeerrButtonPosition">Position</label>
-                                <select id="SeerrButtonPosition" is="emby-select">
-                                    <option value="Sidebar">Seitenmenü</option>
-                                    <option value="Header">Header</option>
-                                    <option value="Both">Beides</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="tt-card tt-wide">
-                            <label class="checkboxContainer">
-                                <span class="emby-checkbox-label">
-                                    <input id="OpenSeerrInNewTab"
-                                           type="checkbox"
-                                           is="emby-checkbox">
-                                    <span>In neuem Fenster öffnen</span>
-                                </span>
-                            </label>
-
-                            <div class="tt-actions">
-                                <button id="TestSeerrButton"
-                                        type="button"
-                                        is="emby-button"
-                                        class="raised emby-button">
-                                    Seerr öffnen
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="tt-panel" data-panel="player">
-                    <h2>Player</h2>
-
-                    <div class="tt-card">
-                        <label class="checkboxContainer">
-                            <span class="emby-checkbox-label">
-                                <input id="EnablePlayerTheme"
-                                       type="checkbox"
-                                       is="emby-checkbox">
-                                <span>Player-Fix und Player-Design aktivieren</span>
-                            </span>
-                        </label>
-                    </div>
-                </section>
-
-                <section class="tt-panel" data-panel="livetv">
-                    <h2>Live-TV</h2>
-
-                    <div class="tt-card">
-                        <label class="checkboxContainer">
-                            <span class="emby-checkbox-label">
-                                <input id="EnableLiveTvTheme"
-                                       type="checkbox"
-                                       is="emby-checkbox">
-                                <span>Live-TV-Design aktivieren</span>
-                            </span>
-                        </label>
-                    </div>
-                </section>
-
-                <section class="tt-panel" data-panel="about">
-                    <h2>Über 3Tide</h2>
-
-                    <div class="tt-card">
-                        <p>Entwicklungsversion für Jellyfin 10.11.11.</p>
-                        <p>Repository: Slimjim-99/jellyfin-plugin-threetide</p>
-                    </div>
-                </section>
-
-                <div class="tt-actions">
-                    <button type="submit"
-                            is="emby-button"
-                            class="raised button-submit block emby-button tt-save">
-                        Einstellungen speichern
-                    </button>
-
-                    <button id="ResetDefaultsButton"
-                            type="button"
-                            is="emby-button"
-                            class="raised emby-button">
-                        Standardwerte
-                    </button>
+                <div class="inputContainer">
+                    <label class="inputLabel" for="SeerrUrl">Seerr-URL</label>
+                    <input id="SeerrUrl" type="url" is="emby-input"
+                           placeholder="https://request.3tide.com">
                 </div>
 
-                <div id="ThreeTideStatus"
-                     class="tt-status"
-                     role="status"></div>
+                <div class="inputContainer">
+                    <label class="inputLabel" for="SeerrButtonLabel">Beschriftung</label>
+                    <input id="SeerrButtonLabel" type="text" is="emby-input">
+                </div>
+
+                <div class="selectContainer">
+                    <label class="selectLabel" for="SeerrButtonPosition">Position</label>
+                    <select id="SeerrButtonPosition" is="emby-select">
+                        <option value="0">Seitenmenü</option>
+                        <option value="1">Header</option>
+                        <option value="2">Beides</option>
+                    </select>
+                </div>
+
+                <label class="checkboxContainer">
+                    <input id="OpenSeerrInNewTab" type="checkbox" is="emby-checkbox">
+                    <span>In neuem Fenster öffnen</span>
+                </label>
+
+                <button id="TestSeerr" is="emby-button" type="button"
+                        class="raised button-submit block">
+                    Seerr-Adresse öffnen
+                </button>
+
+                <button is="emby-button" type="submit"
+                        class="raised button-submit block">
+                    Speichern
+                </button>
             </form>
         </div>
     </div>
 
-    <script>
-        (() => {
-            "use strict";
+<script type="text/javascript">
+(() => {
+    const pluginId = "7f91b8a5-0cd1-4e71-a379-70d820dcdac5";
+    const page = document.querySelector("#ThreeTideConfigPage");
+    const form = document.querySelector("#ThreeTideConfigForm");
 
-            const pluginId = "7f91b8a5-0cd1-4e71-a379-70d820dcdac5";
-            const page = document.querySelector("#ThreeTideConfigPage");
-            const form = document.querySelector("#ThreeTideConfigForm");
-            const status = document.querySelector("#ThreeTideStatus");
+    const setChecked = (id, value) => {
+        document.getElementById(id).checked = Boolean(value);
+    };
 
-            const defaults = {
-                EnableTheme: true,
-                EnablePlayerTheme: true,
-                EnableLiveTvTheme: true,
-                EnableSeerrButton: false,
-                SeerrUrl: "https://request.3tide.com",
-                SeerrButtonLabel: "Anfragen",
-                SeerrButtonPosition: "Sidebar",
-                OpenSeerrInNewTab: true,
-                BrandColor: "#E50914",
-                LogoUrl: "/web/assets/logo/3tide.png"
-            };
+    page.addEventListener("pageshow", () => {
+        Dashboard.showLoadingMsg();
+        ApiClient.getPluginConfiguration(pluginId).then((config) => {
+            setChecked("EnableTheme", config.EnableTheme);
+            setChecked("EnablePlayerTheme", config.EnablePlayerTheme);
+            setChecked("EnableLiveTvTheme", config.EnableLiveTvTheme);
+            setChecked("EnableSeerrButton", config.EnableSeerrButton);
+            document.getElementById("SeerrUrl").value = config.SeerrUrl || "";
+            document.getElementById("SeerrButtonLabel").value =
+                config.SeerrButtonLabel || "Anfragen";
+            document.getElementById("SeerrButtonPosition").value =
+                String(config.SeerrButtonPosition ?? 0);
+            setChecked("OpenSeerrInNewTab", config.OpenSeerrInNewTab);
+            Dashboard.hideLoadingMsg();
+        });
+    });
 
-            const el = (id) => document.getElementById(id);
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        Dashboard.showLoadingMsg();
 
-            function showStatus(text, type = "") {
-                status.textContent = text;
-                status.className = "tt-status " + type;
-            }
+        ApiClient.getPluginConfiguration(pluginId).then((config) => {
+            config.EnableTheme =
+                document.getElementById("EnableTheme").checked;
+            config.EnablePlayerTheme =
+                document.getElementById("EnablePlayerTheme").checked;
+            config.EnableLiveTvTheme =
+                document.getElementById("EnableLiveTvTheme").checked;
+            config.EnableSeerrButton =
+                document.getElementById("EnableSeerrButton").checked;
+            config.SeerrUrl =
+                document.getElementById("SeerrUrl").value.trim();
+            config.SeerrButtonLabel =
+                document.getElementById("SeerrButtonLabel").value.trim();
+            config.SeerrButtonPosition =
+                Number(document.getElementById("SeerrButtonPosition").value);
+            config.OpenSeerrInNewTab =
+                document.getElementById("OpenSeerrInNewTab").checked;
 
-            function normalizePosition(value) {
-                if (typeof value === "number") {
-                    return ["Sidebar", "Header", "Both"][value] || "Sidebar";
-                }
+            ApiClient.updatePluginConfiguration(pluginId, config)
+                .then(Dashboard.processPluginConfigurationUpdateResult);
+        });
 
-                const normalized = String(value || "Sidebar").toLowerCase();
+        return false;
+    });
 
-                if (normalized === "header") {
-                    return "Header";
-                }
+    document.getElementById("TestSeerr").addEventListener("click", () => {
+        const url = document.getElementById("SeerrUrl").value.trim();
+        if (!/^https?:\/\//i.test(url)) {
+            Dashboard.alert("Bitte eine gültige HTTP- oder HTTPS-Adresse eintragen.");
+            return;
+        }
 
-                if (normalized === "both") {
-                    return "Both";
-                }
-
-                return "Sidebar";
-            }
-
-            function updatePreview() {
-                const color = el("BrandColor").value.trim();
-
-                el("BrandColorPreview").style.backgroundColor =
-                    /^#[0-9a-f]{6}$/i.test(color)
-                        ? color
-                        : defaults.BrandColor;
-
-                el("LogoPreview").src =
-                    el("LogoUrl").value.trim() || defaults.LogoUrl;
-            }
-
-            function loadForm(config) {
-                el("EnableTheme").checked =
-                    Boolean(config.EnableTheme);
-
-                el("EnablePlayerTheme").checked =
-                    Boolean(config.EnablePlayerTheme ?? config.EnablePlayer);
-
-                el("EnableLiveTvTheme").checked =
-                    Boolean(config.EnableLiveTvTheme ?? config.EnableLiveTv);
-
-                el("EnableSeerrButton").checked =
-                    Boolean(config.EnableSeerrButton ?? config.EnableSeerr);
-
-                el("SeerrUrl").value =
-                    config.SeerrUrl || defaults.SeerrUrl;
-
-                el("SeerrButtonLabel").value =
-                    config.SeerrButtonLabel || defaults.SeerrButtonLabel;
-
-                el("SeerrButtonPosition").value =
-                    normalizePosition(
-                        config.SeerrButtonPosition ??
-                        config.SeerrButtonLocation
-                    );
-
-                el("OpenSeerrInNewTab").checked =
-                    config.OpenSeerrInNewTab !== false;
-
-                el("BrandColor").value =
-                    config.BrandColor || defaults.BrandColor;
-
-                el("LogoUrl").value =
-                    config.LogoUrl || defaults.LogoUrl;
-
-                updatePreview();
-            }
-
-            function updateConfig(config) {
-                config.EnableTheme =
-                    el("EnableTheme").checked;
-
-                config.EnablePlayerTheme =
-                    el("EnablePlayerTheme").checked;
-
-                config.EnablePlayer =
-                    config.EnablePlayerTheme;
-
-                config.EnableLiveTvTheme =
-                    el("EnableLiveTvTheme").checked;
-
-                config.EnableLiveTv =
-                    config.EnableLiveTvTheme;
-
-                config.EnableSeerrButton =
-                    el("EnableSeerrButton").checked;
-
-                config.EnableSeerr =
-                    config.EnableSeerrButton;
-
-                config.SeerrUrl =
-                    el("SeerrUrl").value.trim();
-
-                config.SeerrButtonLabel =
-                    el("SeerrButtonLabel").value.trim() ||
-                    defaults.SeerrButtonLabel;
-
-                config.SeerrButtonPosition =
-                    el("SeerrButtonPosition").value;
-
-                config.SeerrButtonLocation =
-                    config.SeerrButtonPosition;
-
-                config.OpenSeerrInNewTab =
-                    el("OpenSeerrInNewTab").checked;
-
-                config.BrandColor =
-                    el("BrandColor").value.trim() ||
-                    defaults.BrandColor;
-
-                config.LogoUrl =
-                    el("LogoUrl").value.trim() ||
-                    defaults.LogoUrl;
-
-                return config;
-            }
-
-            page.querySelectorAll(".tt-tab").forEach((button) => {
-                button.addEventListener("click", () => {
-                    page.querySelectorAll(".tt-tab").forEach((item) => {
-                        item.classList.toggle("active", item === button);
-                    });
-
-                    page.querySelectorAll(".tt-panel").forEach((panel) => {
-                        panel.classList.toggle(
-                            "active",
-                            panel.dataset.panel === button.dataset.tab
-                        );
-                    });
-                });
-            });
-
-            el("BrandColor").addEventListener("input", updatePreview);
-            el("LogoUrl").addEventListener("input", updatePreview);
-
-            el("TestSeerrButton").addEventListener("click", () => {
-                const url = el("SeerrUrl").value.trim();
-
-                if (!/^https?:\/\//i.test(url)) {
-                    showStatus(
-                        "Bitte eine gültige HTTP- oder HTTPS-Adresse eintragen.",
-                        "error"
-                    );
-                    return;
-                }
-
-                window.open(url, "_blank", "noopener,noreferrer");
-            });
-
-            el("ResetDefaultsButton").addEventListener("click", () => {
-                loadForm(defaults);
-                showStatus("Standardwerte geladen. Noch speichern.");
-            });
-
-            page.addEventListener("pageshow", () => {
-                Dashboard.showLoadingMsg();
-
-                ApiClient.getPluginConfiguration(pluginId)
-                    .then((config) => {
-                        loadForm(config);
-                        Dashboard.hideLoadingMsg();
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                        Dashboard.hideLoadingMsg();
-                        showStatus(
-                            "Einstellungen konnten nicht geladen werden.",
-                            "error"
-                        );
-                    });
-            });
-
-            form.addEventListener("submit", (event) => {
-                event.preventDefault();
-                Dashboard.showLoadingMsg();
-
-                ApiClient.getPluginConfiguration(pluginId)
-                    .then((config) => {
-                        return ApiClient.updatePluginConfiguration(
-                            pluginId,
-                            updateConfig(config)
-                        );
-                    })
-                    .then((result) => {
-                        Dashboard.processPluginConfigurationUpdateResult(result);
-                        showStatus(
-                            "Einstellungen gespeichert. Für Frontend-Änderungen Jellyfin neu starten.",
-                            "ok"
-                        );
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                        Dashboard.hideLoadingMsg();
-                        showStatus(
-                            "Einstellungen konnten nicht gespeichert werden.",
-                            "error"
-                        );
-                    });
-
-                return false;
-            });
-        })();
-    </script>
+        window.open(url, "_blank", "noopener,noreferrer");
+    });
+})();
+</script>
 </div>
 </body>
 </html>
