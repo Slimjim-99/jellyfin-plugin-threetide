@@ -1,3 +1,30 @@
+const brandName = config.brandName || "3Tide";
+
+function applyBrandTitle() {
+    const currentTitle = document.title || "";
+
+    if (!currentTitle.includes(brandName)) {
+        document.title = currentTitle
+            .replace(/Jellyfin/gi, brandName)
+            .trim() || brandName;
+    }
+
+    const applicationTitle = document.querySelector(
+        'meta[name="application-name"]'
+    );
+
+    if (applicationTitle) {
+        applicationTitle.setAttribute("content", brandName);
+    }
+
+    const appleTitle = document.querySelector(
+        'meta[name="apple-mobile-web-app-title"]'
+    );
+
+    if (appleTitle) {
+        appleTitle.setAttribute("content", brandName);
+    }
+}
 (() => {
 "use strict";
 const config=window.__THREETIDE_CONFIG__||{};
@@ -25,5 +52,17 @@ const ensureButtons=()=>{
  }
 };
 new MutationObserver(ensureButtons).observe(document.documentElement,{childList:true,subtree:true});
-ensureButtons();
+    ensureButtons();
+    applyBrandTitle();
+
+    const titleObserver = new MutationObserver(applyBrandTitle);
+
+    titleObserver.observe(
+        document.querySelector("title") || document.documentElement,
+        {
+            childList: true,
+            subtree: true,
+            characterData: true
+        }
+    );
 })();
