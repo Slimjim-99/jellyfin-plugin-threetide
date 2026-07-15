@@ -1,18 +1,21 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.8.12009.203 stable
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jellyfin.Plugin.ThreeTide", "Jellyfin.Plugin.ThreeTide\Jellyfin.Plugin.ThreeTide.csproj", "{7F91B8A5-0CD1-4E71-A379-70D820DCDAC5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jellyfin.Plugin.ThreeTide", "src\Jellyfin.Plugin.ThreeTide\Jellyfin.Plugin.ThreeTide.csproj", "{D9EB3B5F-7D7B-1CA4-4A40-F3B835E9C495}"
 EndProject
 Global
-    GlobalSection(SolutionConfigurationPlatforms) = preSolution
-        Debug|Any CPU = Debug|Any CPU
-        Release|Any CPU = Release|Any CPU
-    EndGlobalSection
-    GlobalSection(ProjectConfigurationPlatforms) = postSolution
-        {7F91B8A5-0CD1-4E71-A379-70D820DCDAC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-        {7F91B8A5-0CD1-4E71-A379-70D820DCDAC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-        {7F91B8A5-0CD1-4E71-A379-70D820DCDAC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-        {7F91B8A5-0CD1-4E71-A379-70D820DCDAC5}.Release|Any CPU.Build.0 = Release|Any CPU
-    EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D9EB3B5F-7D7B-1CA4-4A40-F3B835E9C495}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9EB3B5F-7D7B-1CA4-4A40-F3B835E9C495}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9EB3B5F-7D7B-1CA4-4A40-F3B835E9C495}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9EB3B5F-7D7B-1CA4-4A40-F3B835E9C495}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 EndGlobal

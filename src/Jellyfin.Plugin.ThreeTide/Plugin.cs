@@ -1,9 +1,10 @@
-using System.Globalization;
 using Jellyfin.Plugin.ThreeTide.Configuration;
+using Jellyfin.Plugin.ThreeTide.Services;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
+using System.Globalization;
 
 namespace Jellyfin.Plugin.ThreeTide;
 
@@ -21,6 +22,8 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
         : base(applicationPaths, xmlSerializer)
     {
         Instance = this;
+        ConfigurationService = new ConfigurationService();
+        ThemeService = new ThemeService(ConfigurationService);
     }
 
     /// <inheritdoc />
@@ -37,7 +40,9 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     /// Gets the current plugin instance.
     /// </summary>
     public static Plugin? Instance { get; private set; }
+    public static ConfigurationService ConfigurationService { get; private set; } = null!;
 
+    public static ThemeService ThemeService { get; private set; } = null!;
     /// <inheritdoc />
     public IEnumerable<PluginPageInfo> GetPages()
     {
