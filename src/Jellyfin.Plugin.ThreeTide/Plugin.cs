@@ -40,9 +40,9 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     /// Gets the current plugin instance.
     /// </summary>
     public static Plugin? Instance { get; private set; }
-    public static ConfigurationService ConfigurationService { get; private set; } = null!;
+    public static IConfigurationService ConfigurationService { get; private set; } = null!;
 
-    public static ThemeService ThemeService { get; private set; } = null!;
+    public static IThemeService ThemeService { get; private set; } = null!;
     /// <inheritdoc />
     public IEnumerable<PluginPageInfo> GetPages()
     {
