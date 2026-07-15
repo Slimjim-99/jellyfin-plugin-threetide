@@ -1,0 +1,31 @@
+name: Bug report
+description: Report a problem with the 3Tide plugin
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: input
+    id: jellyfin
+    attributes:
+      label: Jellyfin version
+      placeholder: 10.11.11
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: Client
+      placeholder: Jellyfin iOS, Jellyfin Desktop, Browser
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      render: shell

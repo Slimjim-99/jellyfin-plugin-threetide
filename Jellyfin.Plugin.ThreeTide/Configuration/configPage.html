@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>3Tide</title>
+</head>
+<body>
+<div id="ThreeTideConfigPage"
+     data-role="page"
+     class="page type-interior pluginConfigurationPage"
+     data-require="emby-input,emby-button,emby-select,emby-checkbox">
+    <div data-role="content">
+        <div class="content-primary">
+            <form id="ThreeTideConfigForm">
+                <h1>3Tide</h1>
+
+                <label class="checkboxContainer">
+                    <input id="EnableTheme" type="checkbox" is="emby-checkbox">
+                    <span>3Tide aktivieren</span>
+                </label>
+
+                <label class="checkboxContainer">
+                    <input id="EnablePlayerTheme" type="checkbox" is="emby-checkbox">
+                    <span>Player-Fix und Player-Design aktivieren</span>
+                </label>
+
+                <label class="checkboxContainer">
+                    <input id="EnableLiveTvTheme" type="checkbox" is="emby-checkbox">
+                    <span>Live-TV-Design aktivieren</span>
+                </label>
+
+                <h2>Seerr</h2>
+
+                <label class="checkboxContainer">
+                    <input id="EnableSeerrButton" type="checkbox" is="emby-checkbox">
+                    <span>Seerr-Button aktivieren</span>
+                </label>
+
+                <div class="inputContainer">
+                    <label class="inputLabel" for="SeerrUrl">Seerr-URL</label>
+                    <input id="SeerrUrl" type="url" is="emby-input"
+                           placeholder="https://request.3tide.com">
+                </div>
+
+                <div class="inputContainer">
+                    <label class="inputLabel" for="SeerrButtonLabel">Beschriftung</label>
+                    <input id="SeerrButtonLabel" type="text" is="emby-input">
+                </div>
+
+                <div class="selectContainer">
+                    <label class="selectLabel" for="SeerrButtonPosition">Position</label>
+                    <select id="SeerrButtonPosition" is="emby-select">
+                        <option value="0">Seitenmenü</option>
+                        <option value="1">Header</option>
+                        <option value="2">Beides</option>
+                    </select>
+                </div>
+
+                <label class="checkboxContainer">
+                    <input id="OpenSeerrInNewTab" type="checkbox" is="emby-checkbox">
+                    <span>In neuem Fenster öffnen</span>
+                </label>
+
+                <button id="TestSeerr" is="emby-button" type="button"
+                        class="raised button-submit block">
+                    Seerr-Adresse öffnen
+                </button>
+
+                <button is="emby-button" type="submit"
+                        class="raised button-submit block">
+                    Speichern
+                </button>
+            </form>
+        </div>
+    </div>
+
+<script type="text/javascript">
+(() => {
+    const pluginId = "7f91b8a5-0cd1-4e71-a379-70d820dcdac5";
+    const page = document.querySelector("#ThreeTideConfigPage");
+    const form = document.querySelector("#ThreeTideConfigForm");
+
+    const setChecked = (id, value) => {
+        document.getElementById(id).checked = Boolean(value);
+    };
+
+    page.addEventListener("pageshow", () => {
+        Dashboard.showLoadingMsg();
+        ApiClient.getPluginConfiguration(pluginId).then((config) => {
+            setChecked("EnableTheme", config.EnableTheme);
+            setChecked("EnablePlayerTheme", config.EnablePlayerTheme);
+            setChecked("EnableLiveTvTheme", config.EnableLiveTvTheme);
+            setChecked("EnableSeerrButton", config.EnableSeerrButton);
+            document.getElementById("SeerrUrl").value = config.SeerrUrl || "";
+            document.getElementById("SeerrButtonLabel").value =
+                config.SeerrButtonLabel || "Anfragen";
+            document.getElementById("SeerrButtonPosition").value =
+                String(config.SeerrButtonPosition ?? 0);
+            setChecked("OpenSeerrInNewTab", config.OpenSeerrInNewTab);
+            Dashboard.hideLoadingMsg();
+        });
+    });
+
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        Dashboard.showLoadingMsg();
+
+        ApiClient.getPluginConfiguration(pluginId).then((config) => {
+            config.EnableTheme =
+                document.getElementById("EnableTheme").checked;
+            config.EnablePlayerTheme =
+                document.getElementById("EnablePlayerTheme").checked;
+            config.EnableLiveTvTheme =
+                document.getElementById("EnableLiveTvTheme").checked;
+            config.EnableSeerrButton =
+                document.getElementById("EnableSeerrButton").checked;
+            config.SeerrUrl =
+                document.getElementById("SeerrUrl").value.trim();
+            config.SeerrButtonLabel =
+                document.getElementById("SeerrButtonLabel").value.trim();
+            config.SeerrButtonPosition =
+                Number(document.getElementById("SeerrButtonPosition").value);
+            config.OpenSeerrInNewTab =
+                document.getElementById("OpenSeerrInNewTab").checked;
+
+            ApiClient.updatePluginConfiguration(pluginId, config)
+                .then(Dashboard.processPluginConfigurationUpdateResult);
+        });
+
+        return false;
+    });
+
+    document.getElementById("TestSeerr").addEventListener("click", () => {
+        const url = document.getElementById("SeerrUrl").value.trim();
+        if (!/^https?:\/\//i.test(url)) {
+            Dashboard.alert("Bitte eine gültige HTTP- oder HTTPS-Adresse eintragen.");
+            return;
+        }
+
+        window.open(url, "_blank", "noopener,noreferrer");
+    });
+})();
+</script>
+</div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+[
+  {
+    "guid": "7f91b8a5-0cd1-4e71-a379-70d820dcdac5",
+    "name": "3Tide",
+    "description": "3Tide theme, player-safe UI and optional Seerr navigation.",
+    "overview": "3Tide branding for Jellyfin Web.",
+    "owner": "3Tide",
+    "category": "General",
+    "versions": [
+      {
+        "version": "0.1.0.0",
+        "changelog": "Initial GitHub-ready development release.",
+        "targetAbi": "10.11.11.0",
+        "sourceUrl": "https://github.com/YOUR-NAME/jellyfin-plugin-threetide/releases/download/v0.1.0/ThreeTide-0.1.0.zip",
+        "checksum": "REPLACE_WITH_SHA256_CHECKSUM",
+        "timestamp": "2026-07-15T00:00:00Z"
+      }
+    ]
+  }
+]
