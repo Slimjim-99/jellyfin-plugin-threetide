@@ -410,3 +410,63 @@ body:not(:has(.homePage, .view-home, .homeSectionsContainer))
 .homeSectionsContainer .verticalSection:first-of-type {
     display: none !important;
 }
+/* =========================================================
+   3Tide – nativen Jellyfin-Player freihalten
+   ========================================================= */
+
+body:has(#videoOsdPage:not(.hide))
+.threetide-header,
+body:has(#videoOsdPage:not(.hide))
+.threetide-drawer-backdrop,
+body:has(#videoOsdPage:not(.hide))
+.threetide-hero,
+body:has(#videoOsdPage:not(.hide))
+.threetide-home-root {
+    display: none !important;
+    pointer-events: none !important;
+}
+
+/* Player-Container muss über allen normalen Seiten liegen */
+
+.videoPlayerContainer {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 99990 !important;
+    background: #000 !important;
+}
+
+    /* Tatsächliches Video */
+
+    .videoPlayerContainer video,
+    video.htmlVideoPlayer {
+        position: absolute !important;
+        inset: 0 !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
+        max-height: none !important;
+        z-index: 2 !important;
+        object-fit: contain !important;
+        background: #000 !important;
+    }
+
+/* Native Jellyfin-Steuerung über das Video legen */
+
+#videoOsdPage {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 100000 !important;
+    background: transparent !important;
+}
+
+/*
+ * Keine opacity- oder visibility-Regeln für die OSD.
+ * Das automatische Ausblenden übernimmt Jellyfin selbst.
+ */
