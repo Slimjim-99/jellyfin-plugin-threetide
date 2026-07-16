@@ -1,0 +1,54 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore
+        run: dotnet restore ThreeTide.Plugin.sln
+
+      - name: Build
+        run: dotnet build ThreeTide.Plugin.sln --configuration Release --no-restore
+
+      - name: Prepare plugin package
+        shell: bash
+        run: |
+          mkdir -p artifacts/3Tide
+          cp src/Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.dll artifacts/3Tide/
+          if [ -f src/Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.pdb ]; then
+            cp src/Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.pdb artifacts/3Tide/
+          fi
+          cd artifacts/3Tide
+          zip -r ../ThreeTide-dev.zip .
+
+      - name: Upload DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: ThreeTide-DLL
+          path: src/Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.dll
+
+      - name: Upload plugin ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: ThreeTide-Plugin
+          path: artifacts/ThreeTide-dev.zip

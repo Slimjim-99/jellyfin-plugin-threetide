@@ -2,20 +2,21 @@ using MediaBrowser.Model.Plugins;
 
 namespace Jellyfin.Plugin.ThreeTide.Configuration;
 
-public class PluginConfiguration : BasePluginConfiguration
+/// <summary>
+/// Stores the 3Tide plugin configuration.
+/// </summary>
+public sealed class PluginConfiguration : BasePluginConfiguration
 {
     // Theme
     public bool EnableTheme { get; set; } = true;
 
-    // Kompatibilität mit bestehendem Code
     public bool EnablePlayerTheme { get; set; } = true;
 
     public bool EnableLiveTvTheme { get; set; } = true;
 
-    // Player
+    // Compatibility aliases
     public bool EnablePlayer { get; set; } = true;
 
-    // Live TV
     public bool EnableLiveTv { get; set; } = true;
 
     // Seerr
@@ -23,13 +24,22 @@ public class PluginConfiguration : BasePluginConfiguration
 
     public bool EnableSeerrButton { get; set; } = true;
 
-    public string SeerrUrl { get; set; } = "https://request.3tide.com";
+    public string SeerrUrl { get; set; } =
+        "https://request.3tide.com";
 
-    public string SeerrButtonLabel { get; set; } = "Anfragen";
+    /// <summary>
+    /// Seerr administrator API key.
+    /// This value must never be exposed to frontend JavaScript.
+    /// </summary>
+    public string SeerrApiKey { get; set; } =
+        string.Empty;
 
-    public string SeerrButtonLocation { get; set; } = "Sidebar";
+    public string SeerrButtonLabel { get; set; } =
+        "Anfragen";
 
-    // Alias für den bestehenden Code
+    public string SeerrButtonLocation { get; set; } =
+        "Sidebar";
+
     public string SeerrButtonPosition
     {
         get => SeerrButtonLocation;
@@ -38,8 +48,28 @@ public class PluginConfiguration : BasePluginConfiguration
 
     public bool OpenSeerrInNewTab { get; set; } = true;
 
-    // Branding
-    public string BrandColor { get; set; } = "#E50914";
+    /// <summary>
+    /// Language used for Seerr discovery and search results.
+    /// </summary>
+    public string SeerrLanguage { get; set; } =
+        "de";
 
-    public string LogoUrl { get; set; } = "/web/assets/logo/3tide.png";
+    /// <summary>
+    /// Number of discovery results returned to the frontend.
+    /// </summary>
+    public int SeerrDiscoveryLimit { get; set; } = 20;
+
+    /// <summary>
+    /// Automatically approve requests when supported.
+    /// Keep disabled initially.
+    /// </summary>
+    public bool SeerrAutoApproveRequests { get; set; } =
+        false;
+
+    // Branding
+    public string BrandColor { get; set; } =
+        "#E50914";
+
+    public string LogoUrl { get; set; } =
+        "/web/assets/logo/3tide.png";
 }

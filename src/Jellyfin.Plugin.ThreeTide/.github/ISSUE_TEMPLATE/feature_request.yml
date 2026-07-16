@@ -1,0 +1,12 @@
+name: Feature request
+description: Suggest a new 3Tide feature
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: feature
+    attributes:
+      label: Feature description
+    validations:
+      required: true

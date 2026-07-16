@@ -24,17 +24,8 @@
     <EmbeddedResource Include="Web\theme.css" />
     <EmbeddedResource Include="Web\player.css" />
     <EmbeddedResource Include="Web\livetv.css" />
-    <EmbeddedResource Include="Web\api.js" />
     <EmbeddedResource Include="Web\runtime.js" />
     <EmbeddedResource Include="Web\hero.css" />
     <EmbeddedResource Include="Web\hero.js" />
-    <EmbeddedResource Include="Web\home.js" />
-    <EmbeddedResource Include="Web\home.css" />
-    <EmbeddedResource Include="Web\search.js" />
-    <EmbeddedResource Include="Web\search.css" />
-    <EmbeddedResource Include="Web\ui.js" />
-    <EmbeddedResource Include="Web\ui.css" />
-    <EmbeddedResource Include="Web\discover.js" />
-    <EmbeddedResource Include="Web\discover.css" />
   </ItemGroup>
 </Project>

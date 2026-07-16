@@ -1,6 +1,50 @@
-body:has(video){background:#000!important}
-body:has(video) .skinHeader,body:has(video) .mainDrawer,body:has(video) .drawerBackdrop,body:has(video) #slides-container,body:has(video) .homeSectionsContainer{display:none!important}
-body:has(video) .videoPlayerContainer,body:has(video) .videoPlayer,body:has(video) .htmlVideoPlayer,body:has(video) .videoPlayerPage{position:fixed!important;inset:0!important;display:block!important;width:100vw!important;height:100vh!important;margin:0!important;padding:0!important;background:#000!important;filter:none!important;transform:none!important;opacity:1!important;visibility:visible!important;z-index:10000!important}
-body:has(video) video{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;background:#000!important;filter:none!important;transform:none!important;opacity:1!important;visibility:visible!important;z-index:1!important}
-body:has(video) .videoOsd,body:has(video) .videoOsdTop,body:has(video) .videoOsdBottom,body:has(video) .osdControls{display:flex!important;visibility:visible!important;opacity:1!important;z-index:30!important;pointer-events:auto!important}
-body:has(video) .mdl-slider-background-lower{background:#e50914!important}
+body:has(video:not(.threetide-hero-preview-video)) {
+    background: #000 !important
+}
+
+    body:has(video:not(.threetide-hero-preview-video)) .skinHeader, body:has(video:not(.threetide-hero-preview-video)) .mainDrawer, body:has(video:not(.threetide-hero-preview-video)) .drawerBackdrop, body:has(video:not(.threetide-hero-preview-video)) #slides-container, body:has(video:not(.threetide-hero-preview-video)) .homeSectionsContainer {
+        display: none !important
+    }
+
+    body:has(video:not(.threetide-hero-preview-video)) .videoPlayerContainer, body:has(video:not(.threetide-hero-preview-video)) .videoPlayer, body:has(video:not(.threetide-hero-preview-video)) .htmlVideoPlayer, body:has(video:not(.threetide-hero-preview-video)) .videoPlayerPage {
+        position: fixed !important;
+        inset: 0 !important;
+        display: block !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #000 !important;
+        filter: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        z-index: 10000 !important
+    }
+
+    body:has(video:not(.threetide-hero-preview-video)) video:not(.threetide-hero-preview-video) {
+        position: absolute !important;
+        inset: 0 !important;
+        display: block !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        background: #000 !important;
+        filter: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        z-index: 1 !important
+    }
+
+    body:has(video:not(.threetide-hero-preview-video)) .videoOsd, body:has(video:not(.threetide-hero-preview-video)) .videoOsdTop, body:has(video:not(.threetide-hero-preview-video)) .videoOsdBottom, body:has(video:not(.threetide-hero-preview-video)) .osdControls {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        z-index: 30 !important;
+        pointer-events: auto !important
+    }
+
+    body:has(video:not(.threetide-hero-preview-video)) .mdl-slider-background-lower {
+        background: #e50914 !important
+    }
