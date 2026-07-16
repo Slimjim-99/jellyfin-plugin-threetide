@@ -5,7 +5,9 @@ on:
     branches:
       - main
       - develop
+
   pull_request:
+
   workflow_dispatch:
 
 permissions:
@@ -13,6 +15,7 @@ permissions:
 
 jobs:
   build:
+    name: Build 3Tide Plugin
     runs-on: ubuntu-latest
 
     steps:
@@ -25,30 +28,48 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore
-        run: dotnet restore ThreeTide.Plugin.sln
+        run: dotnet restore ./Jellyfin.Plugin.ThreeTide.csproj
 
       - name: Build
-        run: dotnet build ThreeTide.Plugin.sln --configuration Release --no-restore
+        run: >
+          dotnet build
+          ./Jellyfin.Plugin.ThreeTide.csproj
+          --configuration Release
+          --no-restore
 
       - name: Prepare plugin package
         shell: bash
         run: |
-          mkdir -p artifacts/3Tide
-          cp src/Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.dll artifacts/3Tide/
-          if [ -f src/Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.pdb ]; then
-            cp src/Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.pdb artifacts/3Tide/
+          set -e
+
+          OUTPUT_DIR="bin/Release/net9.0"
+          PACKAGE_DIR="artifacts/ThreeTide"
+
+          mkdir -p "$PACKAGE_DIR"
+
+          cp \
+            "$OUTPUT_DIR/Jellyfin.Plugin.ThreeTide.dll" \
+            "$PACKAGE_DIR/Jellyfin.Plugin.ThreeTide.dll"
+
+          if [ -f "$OUTPUT_DIR/Jellyfin.Plugin.ThreeTide.pdb" ]; then
+            cp \
+              "$OUTPUT_DIR/Jellyfin.Plugin.ThreeTide.pdb" \
+              "$PACKAGE_DIR/Jellyfin.Plugin.ThreeTide.pdb"
           fi
-          cd artifacts/3Tide
-          zip -r ../ThreeTide-dev.zip .
+
+          cd "$PACKAGE_DIR"
+          zip -r "../ThreeTide-dev.zip" .
 
       - name: Upload DLL
         uses: actions/upload-artifact@v4
         with:
           name: ThreeTide-DLL
-          path: src/Jellyfin.Plugin.ThreeTide/bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.dll
+          path: bin/Release/net9.0/Jellyfin.Plugin.ThreeTide.dll
+          if-no-files-found: error
 
       - name: Upload plugin ZIP
         uses: actions/upload-artifact@v4
         with:
           name: ThreeTide-Plugin
           path: artifacts/ThreeTide-dev.zip
+          if-no-files-found: error
