@@ -49,7 +49,8 @@ public static class IndexHtmlTransformation
             Plugin.ReadEmbeddedText("home.css"),
             Plugin.ReadEmbeddedText("search.css"),
             Plugin.ReadEmbeddedText("ui.css"),
-            Plugin.ReadEmbeddedText("discover.css")
+            Plugin.ReadEmbeddedText("discover.css"),
+            Plugin.ReadEmbeddedText("catalog.css")
         ];
 
         if (config.EnablePlayerTheme)
@@ -110,7 +111,8 @@ public static class IndexHtmlTransformation
 
         string uiScript =
             Plugin.ReadEmbeddedText("ui.js");
-
+        string catalogScript =
+            Plugin.ReadEmbeddedText("catalog.js"); 
         string discoverScript =
             Plugin.ReadEmbeddedText("discover.js");
 
@@ -125,6 +127,9 @@ public static class IndexHtmlTransformation
 
         string searchScript =
             Plugin.ReadEmbeddedText("search.js");
+
+        string playerScript =
+    Plugin.ReadEmbeddedText("player.js");
 
         string runtimeScript =
             Plugin.ReadEmbeddedText("runtime.js");
@@ -147,6 +152,10 @@ window.__THREETIDE_CONFIG__ = {browserConfig};
 {uiScript}
 </script>
 
+<script id="threetide-catalog-script">
+{catalogScript}
+</script>  
+
 <script id="threetide-discover-script">
 {discoverScript}
 </script>
@@ -165,6 +174,10 @@ window.__THREETIDE_CONFIG__ = {browserConfig};
 
 <script id="threetide-search-script">
 {searchScript}
+</script> 
+
+<script id="threetide-player-script">
+{playerScript}
 </script>
 
 <script id="threetide-runtime-script">

@@ -1,4 +1,3 @@
-using System.Globalization;
 using Jellyfin.Plugin.ThreeTide.Configuration;
 using Jellyfin.Plugin.ThreeTide.Services;
 using Jellyfin.Plugin.ThreeTide.Services.Branding;
@@ -6,6 +5,8 @@ using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
+using System.Globalization;
+using System.Reflection;
 
 namespace Jellyfin.Plugin.ThreeTide;
 
@@ -104,27 +105,39 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     /// <returns>Asset text.</returns>
     public static string ReadEmbeddedText(string fileName)
     {
-        string suffix = ".Web." + fileName;
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
 
-        string? resourceName = typeof(Plugin).Assembly
-            .GetManifestResourceNames()
-            .FirstOrDefault(
-                name => name.EndsWith(
-                    suffix,
-                    StringComparison.OrdinalIgnoreCase));
+        Assembly assembly =
+            typeof(Plugin).Assembly;
+
+        string? resourceName =
+            assembly
+                .GetManifestResourceNames()
+                .FirstOrDefault(
+                    name =>
+                        name.EndsWith(
+                            $".{fileName}",
+                            StringComparison.OrdinalIgnoreCase));
 
         if (resourceName is null)
         {
-            throw new InvalidOperationException(
-                $"Embedded resource '{fileName}' was not found.");
+            return string.Empty;
         }
 
-        using Stream stream =
-            typeof(Plugin).Assembly.GetManifestResourceStream(resourceName)
-            ?? throw new InvalidOperationException(
-                $"Unable to open embedded resource '{resourceName}'.");
+        using Stream? stream =
+            assembly.GetManifestResourceStream(
+                resourceName);
 
-        using StreamReader reader = new(stream);
+        if (stream is null)
+        {
+            return string.Empty;
+        }
+
+        using StreamReader reader =
+            new(
+                stream,
+                System.Text.Encoding.UTF8,
+                detectEncodingFromByteOrderMarks: true);
 
         return reader.ReadToEnd();
     }

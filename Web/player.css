@@ -1,50 +1,262 @@
-body:has(video:not(.threetide-hero-preview-video)) {
-    background: #000 !important
+/* =========================================================
+   3Tide Player V1
+   Stellt zuerst alle Jellyfin-Bedienelemente zuverlässig her.
+   ========================================================= */
+
+body.threetide-player-active {
+    overflow: hidden !important;
+    background: #000 !important;
 }
 
-    body:has(video:not(.threetide-hero-preview-video)) .skinHeader, body:has(video:not(.threetide-hero-preview-video)) .mainDrawer, body:has(video:not(.threetide-hero-preview-video)) .drawerBackdrop, body:has(video:not(.threetide-hero-preview-video)) #slides-container, body:has(video:not(.threetide-hero-preview-video)) .homeSectionsContainer {
-        display: none !important
+body.threetide-player-active #threetide-header,
+body.threetide-player-active #threetide-drawer,
+body.threetide-player-active .skinHeader,
+body.threetide-player-active .mainDrawer,
+body.threetide-player-active .drawerBackdrop {
+    display: none !important;
+}
+
+body.threetide-player-active .videoPlayerContainer,
+body.threetide-player-active .videoPlayerPage,
+body.threetide-player-active .videoPlayer {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 20000 !important;
+
+    display: block !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    overflow: hidden !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    background: #000 !important;
+    transform: none !important;
+    filter: none !important;
+}
+
+body.threetide-player-active
+video:not(.threetide-hero-preview-video) {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 1 !important;
+
+    display: block !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    object-fit: contain !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    background: #000 !important;
+    transform: none !important;
+    filter: none !important;
+}
+
+/* OSD darf niemals hinter dem Video liegen. */
+
+body.threetide-player-active .videoOsd,
+body.threetide-player-active .videoOsdTop,
+body.threetide-player-active .videoOsdBottom,
+body.threetide-player-active .osdControls,
+body.threetide-player-active .videoOsdBottom-maincontrols,
+body.threetide-player-active .videoOsdBottom-maincontrolsbuttons {
+    z-index: 50 !important;
+
+    visibility: visible !important;
+
+    pointer-events: auto !important;
+}
+
+/*
+ * Jellyfin steuert die Sichtbarkeit weiterhin selbst.
+ * Unsere Klasse stellt die Controls bei Maus, Touch und Pause zusätzlich her.
+ */
+
+body.threetide-player-controls-visible .videoOsd,
+body.threetide-player-controls-visible .videoOsdTop,
+body.threetide-player-controls-visible .videoOsdBottom,
+body.threetide-player-controls-visible .osdControls {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+/* Dunkler Filmverlauf oben und unten */
+
+body.threetide-player-active .videoOsdTop {
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0.9) 0%,
+            rgba(0, 0, 0, 0.48) 55%,
+            transparent 100%
+        ) !important;
+}
+
+body.threetide-player-active .videoOsdBottom {
+    padding:
+        5rem
+        clamp(1rem, 3vw, 3.4rem)
+        clamp(1rem, 2.2vw, 2.4rem) !important;
+
+    background:
+        linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.96) 0%,
+            rgba(0, 0, 0, 0.68) 52%,
+            transparent 100%
+        ) !important;
+}
+
+/* Buttons */
+
+body.threetide-player-active .videoOsd button,
+body.threetide-player-active .osdControls button,
+body.threetide-player-active .paper-icon-button-light {
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    color: #fff !important;
+
+    border-radius: 50% !important;
+
+    pointer-events: auto !important;
+
+    transition:
+        transform 160ms ease,
+        background-color 160ms ease,
+        color 160ms ease !important;
+}
+
+body.threetide-player-active .videoOsd button:hover,
+body.threetide-player-active .osdControls button:hover,
+body.threetide-player-active .paper-icon-button-light:hover {
+    color: #fff !important;
+
+    background:
+        rgba(255, 255, 255, 0.14) !important;
+
+    transform: scale(1.1) !important;
+}
+
+/* Play/Pause etwas stärker hervorheben */
+
+body.threetide-player-active
+button[data-action="playpause"],
+body.threetide-player-active
+.btnPause,
+body.threetide-player-active
+.btnPlay {
+    background:
+        rgba(255, 255, 255, 0.16) !important;
+
+    box-shadow:
+        0 8px 24px
+        rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Fortschrittsleiste */
+
+body.threetide-player-active .mdl-slider-background-lower,
+body.threetide-player-active .sliderBubble,
+body.threetide-player-active .playedIndicator,
+body.threetide-player-active .progressContainer .progress {
+    background:
+        var(
+            --threetide-brand-color,
+            #e50914
+        ) !important;
+}
+
+body.threetide-player-active input[type="range"] {
+    accent-color:
+        var(
+            --threetide-brand-color,
+            #e50914
+        ) !important;
+}
+
+body.threetide-player-active .mdl-slider::-webkit-slider-thumb,
+body.threetide-player-active
+input[type="range"]::-webkit-slider-thumb {
+    background:
+        var(
+            --threetide-brand-color,
+            #e50914
+        ) !important;
+
+    box-shadow:
+        0 0 0 5px
+        rgba(229, 9, 20, 0.22) !important;
+}
+
+/* Titel und Zeit */
+
+body.threetide-player-active .videoOsdTitle,
+body.threetide-player-active .nowPlayingBarText,
+body.threetide-player-active .osdTitle {
+    color: #fff !important;
+
+    font-weight: 700 !important;
+
+    text-shadow:
+        0 2px 14px
+        rgba(0, 0, 0, 0.9) !important;
+}
+
+body.threetide-player-active .positionTime,
+body.threetide-player-active .durationText,
+body.threetide-player-active .endsAtText {
+    color:
+        rgba(255, 255, 255, 0.76) !important;
+}
+
+/* Menüs für Audio, Untertitel und Qualität */
+
+body.threetide-player-active .actionSheet,
+body.threetide-player-active .dialog,
+body.threetide-player-active .selectMenu,
+body.threetide-player-active .listItem-border {
+    color: #fff !important;
+
+    background:
+        rgba(15, 15, 15, 0.97) !important;
+
+    border-color:
+        rgba(255, 255, 255, 0.1) !important;
+
+    backdrop-filter: blur(18px) !important;
+}
+
+@media (max-width: 850px) {
+    body.threetide-player-active .videoOsdBottom {
+        padding:
+            4.5rem
+            0.8rem
+            max(0.8rem, env(safe-area-inset-bottom)) !important;
     }
 
-    body:has(video:not(.threetide-hero-preview-video)) .videoPlayerContainer, body:has(video:not(.threetide-hero-preview-video)) .videoPlayer, body:has(video:not(.threetide-hero-preview-video)) .htmlVideoPlayer, body:has(video:not(.threetide-hero-preview-video)) .videoPlayerPage {
-        position: fixed !important;
-        inset: 0 !important;
-        display: block !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #000 !important;
-        filter: none !important;
-        transform: none !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        z-index: 10000 !important
+    body.threetide-player-active .videoOsd button,
+    body.threetide-player-active .osdControls button {
+        min-width: 42px !important;
+        min-height: 42px !important;
     }
+}
 
-    body:has(video:not(.threetide-hero-preview-video)) video:not(.threetide-hero-preview-video) {
-        position: absolute !important;
-        inset: 0 !important;
-        display: block !important;
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: contain !important;
-        background: #000 !important;
-        filter: none !important;
-        transform: none !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        z-index: 1 !important
+@media (hover: none) and (pointer: coarse) {
+    body.threetide-player-active .videoOsd button,
+    body.threetide-player-active .osdControls button {
+        min-width: 46px !important;
+        min-height: 46px !important;
     }
-
-    body:has(video:not(.threetide-hero-preview-video)) .videoOsd, body:has(video:not(.threetide-hero-preview-video)) .videoOsdTop, body:has(video:not(.threetide-hero-preview-video)) .videoOsdBottom, body:has(video:not(.threetide-hero-preview-video)) .osdControls {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        z-index: 30 !important;
-        pointer-events: auto !important
-    }
-
-    body:has(video:not(.threetide-hero-preview-video)) .mdl-slider-background-lower {
-        background: #e50914 !important
-    }
+}
