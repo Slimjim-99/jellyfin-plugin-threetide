@@ -162,6 +162,64 @@ public sealed class SeerrController : ControllerBase
                     "Zeitüberschreitung beim Durchsuchen von Seerr."));
         }
     }
+
+    /// <summary>
+    /// Submits a media request to Seerr.
+    /// </summary>
+    [HttpPost("Request")]
+    [ProducesResponseType(
+        typeof(JsonObject),
+        StatusCodes.Status200OK)]
+    [ProducesResponseType(
+        typeof(ThreeTideApiError),
+        StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(
+        typeof(ThreeTideApiError),
+        StatusCodes.Status502BadGateway)]
+    public async Task<ActionResult<JsonObject>>
+        RequestMediaAsync(
+            [FromBody] SeerrRequestBody body,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            JsonObject result =
+                await _seerrService.RequestMediaAsync(
+                    body.MediaId,
+                    body.MediaType,
+                    body.Seasons,
+                    cancellationToken);
+
+            return Ok(result);
+        }
+        catch (ArgumentException exception)
+        {
+            return BadRequest(
+                new ThreeTideApiError(
+                    exception.Message));
+        }
+        catch (SeerrConfigurationException exception)
+        {
+            return BadRequest(
+                new ThreeTideApiError(
+                    exception.Message));
+        }
+        catch (SeerrApiException exception)
+        {
+            return StatusCode(
+                StatusCodes.Status502BadGateway,
+                new ThreeTideApiError(
+                    exception.Message));
+        }
+        catch (OperationCanceledException)
+            when (!cancellationToken.IsCancellationRequested)
+        {
+            return StatusCode(
+                StatusCodes.Status504GatewayTimeout,
+                new ThreeTideApiError(
+                    "Zeitüberschreitung beim Anfragen bei Seerr."));
+        }
+    }
 }
 
 /// <summary>
@@ -169,3 +227,24 @@ public sealed class SeerrController : ControllerBase
 /// </summary>
 public sealed record ThreeTideApiError(
     string Message);
+
+/// <summary>
+/// Request body for submitting a Seerr media request.
+/// </summary>
+public sealed class SeerrRequestBody
+{
+    /// <summary>
+    /// Gets or sets the TMDB id of the movie or series.
+    /// </summary>
+    public int MediaId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the media type ("movie" or "tv").
+    /// </summary>
+    public string MediaType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the optional season numbers to request (TV only).
+    /// </summary>
+    public int[]? Seasons { get; set; }
+}
