@@ -256,153 +256,62 @@
                 </section>
 
                 <section class="tt-panel" data-panel="requests">
-    <h2>Seerr-Integration</h2>
+                    <h2>Requests</h2>
 
-    <p class="tt-intro">
-        Seerr wird direkt in die 3Tide-Oberfläche eingebunden.
-        Der API-Key bleibt ausschließlich serverseitig gespeichert.
-    </p>
+                    <div class="tt-grid">
+                        <div class="tt-card tt-wide">
+                            <div class="inputContainer">
+                                <label class="inputLabel" for="SeerrUrl">Seerr-URL</label>
+                                <input id="SeerrUrl"
+                                       type="url"
+                                       is="emby-input"
+                                       placeholder="https://request.3tide.com">
+                            </div>
+                        </div>
 
-    <div class="tt-grid">
-        <div class="tt-card tt-wide">
-            <div class="inputContainer">
-                <label class="inputLabel" for="SeerrUrl">
-                    Seerr-URL
-                </label>
+                        <div class="tt-card">
+                            <div class="inputContainer">
+                                <label class="inputLabel" for="SeerrButtonLabel">Beschriftung</label>
+                                <input id="SeerrButtonLabel"
+                                       type="text"
+                                       is="emby-input"
+                                       placeholder="Anfragen">
+                            </div>
+                        </div>
 
-                <input id="SeerrUrl"
-                       type="url"
-                       is="emby-input"
-                       placeholder="https://request.3tide.com">
+                        <div class="tt-card">
+                            <div class="selectContainer">
+                                <label class="selectLabel" for="SeerrButtonPosition">Position</label>
+                                <select id="SeerrButtonPosition" is="emby-select">
+                                    <option value="Sidebar">Seitenmenü</option>
+                                    <option value="Header">Header</option>
+                                    <option value="Both">Beides</option>
+                                </select>
+                            </div>
+                        </div>
 
-                <div class="fieldDescription">
-                    Basisadresse ohne <code>/api/v1</code> am Ende.
-                </div>
-            </div>
-        </div>
+                        <div class="tt-card tt-wide">
+                            <label class="checkboxContainer">
+                                <span class="emby-checkbox-label">
+                                    <input id="OpenSeerrInNewTab"
+                                           type="checkbox"
+                                           is="emby-checkbox">
+                                    <span>In neuem Fenster öffnen</span>
+                                </span>
+                            </label>
 
-        <div class="tt-card tt-wide">
-            <div class="inputContainer">
-                <label class="inputLabel" for="SeerrApiKey">
-                    Seerr API-Key
-                </label>
+                            <div class="tt-actions">
+                                <button id="TestSeerrButton"
+                                        type="button"
+                                        is="emby-button"
+                                        class="raised emby-button">
+                                    Seerr öffnen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-                <input id="SeerrApiKey"
-                       type="password"
-                       is="emby-input"
-                       autocomplete="new-password"
-                       placeholder="API-Key aus den Seerr-Einstellungen">
-
-                <div class="fieldDescription">
-                    Wird nur in der Jellyfin-Plugin-Konfiguration gespeichert
-                    und nicht an das 3Tide-Frontend ausgeliefert.
-                </div>
-            </div>
-        </div>
-
-        <div class="tt-card">
-            <div class="selectContainer">
-                <label class="selectLabel" for="SeerrLanguage">
-                    Sprache
-                </label>
-
-                <select id="SeerrLanguage" is="emby-select">
-                    <option value="de">Deutsch</option>
-                    <option value="en">Englisch</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="tt-card">
-            <div class="inputContainer">
-                <label class="inputLabel" for="SeerrDiscoveryLimit">
-                    Discover-Ergebnisse
-                </label>
-
-                <input id="SeerrDiscoveryLimit"
-                       type="number"
-                       min="6"
-                       max="50"
-                       step="1"
-                       is="emby-input">
-
-                <div class="fieldDescription">
-                    Zwischen 6 und 50 Ergebnissen.
-                </div>
-            </div>
-        </div>
-
-        <div class="tt-card">
-            <div class="inputContainer">
-                <label class="inputLabel" for="SeerrButtonLabel">
-                    Beschriftung
-                </label>
-
-                <input id="SeerrButtonLabel"
-                       type="text"
-                       is="emby-input"
-                       placeholder="Anfragen">
-            </div>
-        </div>
-
-        <div class="tt-card">
-            <div class="selectContainer">
-                <label class="selectLabel" for="SeerrButtonPosition">
-                    Position
-                </label>
-
-                <select id="SeerrButtonPosition" is="emby-select">
-                    <option value="Sidebar">Seitenmenü</option>
-                    <option value="Header">Header</option>
-                    <option value="Both">Beides</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="tt-card">
-            <label class="checkboxContainer">
-                <span class="emby-checkbox-label">
-                    <input id="OpenSeerrInNewTab"
-                           type="checkbox"
-                           is="emby-checkbox">
-
-                    <span>
-                        Externe Seerr-Seite in neuem Fenster öffnen
-                    </span>
-                </span>
-            </label>
-        </div>
-
-        <div class="tt-card">
-            <label class="checkboxContainer">
-                <span class="emby-checkbox-label">
-                    <input id="SeerrAutoApproveRequests"
-                           type="checkbox"
-                           is="emby-checkbox">
-
-                    <span>
-                        Requests automatisch freigeben
-                    </span>
-                </span>
-            </label>
-
-            <div class="fieldDescription">
-                Für die ersten Tests deaktiviert lassen.
-            </div>
-        </div>
-
-        <div class="tt-card tt-wide">
-            <div class="tt-actions">
-                <button id="TestSeerrButton"
-                        type="button"
-                        is="emby-button"
-                        class="raised emby-button">
-                    Seerr öffnen
-                </button>
-            </div>
-        </div>
-    </div>
-</section>
                 <section class="tt-panel" data-panel="player">
                     <h2>Player</h2>
 
@@ -479,10 +388,6 @@
                 EnableLiveTvTheme: true,
                 EnableSeerrButton: false,
                 SeerrUrl: "https://request.3tide.com",
-                SeerrApiKey: "",
-                SeerrLanguage: "de",
-                SeerrDiscoveryLimit: 20,
-                SeerrAutoApproveRequests: false,
                 SeerrButtonLabel: "Anfragen",
                 SeerrButtonPosition: "Sidebar",
                 OpenSeerrInNewTab: true,
@@ -542,23 +447,7 @@
 
                 el("SeerrUrl").value =
                     config.SeerrUrl || defaults.SeerrUrl;
-                ("SeerrApiKey").value =
 
-                    config.SeerrApiKey || "";
-
-                el("SeerrLanguage").value =
-
-                    config.SeerrLanguage || defaults.SeerrLanguage;
-
-                el("SeerrDiscoveryLimit").value =
-
-                    Number(config.SeerrDiscoveryLimit) ||
-
-                    defaults.SeerrDiscoveryLimit;
-
-                el("SeerrAutoApproveRequests").checked =
-
-                    Boolean(config.SeerrAutoApproveRequests);
                 el("SeerrButtonLabel").value =
                     config.SeerrButtonLabel || defaults.SeerrButtonLabel;
 
@@ -604,25 +493,6 @@
 
                 config.SeerrUrl =
                     el("SeerrUrl").value.trim();
-
-                config.SeerrApiKey =
-                    el("SeerrApiKey").value.trim();
-
-                config.SeerrLanguage =
-                    el("SeerrLanguage").value || "de";
-
-                config.SeerrDiscoveryLimit =
-                    Math.max(
-                        6,
-                        Math.min(
-                            50,
-                            Number(el("SeerrDiscoveryLimit").value) ||
-                            defaults.SeerrDiscoveryLimit
-                        )
-                    );
-
-                config.SeerrAutoApproveRequests =
-                    el("SeerrAutoApproveRequests").checked;
 
                 config.SeerrButtonLabel =
                     el("SeerrButtonLabel").value.trim() ||

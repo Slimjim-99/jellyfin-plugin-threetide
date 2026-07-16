@@ -18,10 +18,12 @@ public sealed class ThreeTideHostedService : IHostedService
     private readonly ILogger<ThreeTideHostedService> _logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ThreeTideHostedService"/> class.
+    /// Initializes a new instance of the
+    /// <see cref="ThreeTideHostedService"/> class.
     /// </summary>
     /// <param name="logger">Logger.</param>
-    public ThreeTideHostedService(ILogger<ThreeTideHostedService> logger)
+    public ThreeTideHostedService(
+        ILogger<ThreeTideHostedService> logger)
     {
         _logger = logger;
     }
@@ -31,49 +33,112 @@ public sealed class ThreeTideHostedService : IHostedService
     {
         try
         {
-            Assembly? fileTransformationAssembly = AssemblyLoadContext.All
-                .SelectMany(context => context.Assemblies)
-                .FirstOrDefault(assembly =>
-                    assembly.FullName?.Contains(
-                        ".FileTransformation",
-                        StringComparison.OrdinalIgnoreCase) == true);
+            Assembly? fileTransformationAssembly =
+                AssemblyLoadContext.All
+                    .SelectMany(context => context.Assemblies)
+                    .FirstOrDefault(assembly =>
+                        assembly.FullName?.Contains(
+                            ".FileTransformation",
+                            StringComparison.OrdinalIgnoreCase) == true);
 
             if (fileTransformationAssembly is null)
             {
                 _logger.LogWarning(
-                    "File Transformation is not loaded. 3Tide frontend injection is inactive.");
+                    "File Transformation is not loaded. " +
+                    "3Tide frontend injection is inactive.");
+
                 return Task.CompletedTask;
             }
 
-            Type? pluginInterfaceType = fileTransformationAssembly.GetType(
-                "Jellyfin.Plugin.FileTransformation.PluginInterface");
+            Type? pluginInterfaceType =
+                fileTransformationAssembly.GetType(
+                    "Jellyfin.Plugin.FileTransformation.PluginInterface");
 
-            MethodInfo? registerMethod = pluginInterfaceType?.GetMethod(
-                "RegisterTransformation",
-                BindingFlags.Public | BindingFlags.Static);
+            MethodInfo? registerMethod =
+                pluginInterfaceType?.GetMethod(
+                    "RegisterTransformation",
+                    BindingFlags.Public |
+                    BindingFlags.Static);
 
             if (registerMethod is null)
             {
                 _logger.LogError(
-                    "File Transformation RegisterTransformation method was not found.");
+                    "File Transformation RegisterTransformation " +
+                    "method was not found.");
+
                 return Task.CompletedTask;
             }
 
-            string payload = JsonSerializer.Serialize(new
+            string payloadJson = JsonSerializer.Serialize(new
             {
                 id = TransformationId,
-                fileNamePattern = @"index\.html$",
-                callbackAssembly = typeof(IndexHtmlTransformation).Assembly.FullName,
-                callbackClass = typeof(IndexHtmlTransformation).FullName,
-                callbackMethod = nameof(IndexHtmlTransformation.Transform)
+                fileNamePattern = "index.html",
+                callbackAssembly =
+                    typeof(IndexHtmlTransformation).Assembly.FullName,
+                callbackClass =
+                    typeof(IndexHtmlTransformation).FullName,
+                callbackMethod =
+                    nameof(IndexHtmlTransformation.Transform)
             });
 
-            registerMethod.Invoke(null, [payload]);
-            _logger.LogInformation("3Tide frontend transformation registered.");
+            ParameterInfo[] parameters =
+                registerMethod.GetParameters();
+
+            if (parameters.Length != 1)
+            {
+                _logger.LogError(
+                    "Unexpected RegisterTransformation signature: " +
+                    "{ParameterCount} parameters.",
+                    parameters.Length);
+
+                return Task.CompletedTask;
+            }
+
+            Type payloadType = parameters[0].ParameterType;
+
+            MethodInfo? parseMethod = payloadType.GetMethod(
+                "Parse",
+                BindingFlags.Public | BindingFlags.Static,
+                binder: null,
+                types: [typeof(string)],
+                modifiers: null);
+
+            if (parseMethod is null)
+            {
+                _logger.LogError(
+                    "Unable to locate {PayloadType}.Parse(string).",
+                    payloadType.FullName);
+
+                return Task.CompletedTask;
+            }
+
+            object? payloadObject =
+                parseMethod.Invoke(null, [payloadJson]);
+
+            if (payloadObject is null)
+            {
+                _logger.LogError(
+                    "Unable to create File Transformation payload.");
+
+                return Task.CompletedTask;
+            }
+
+            registerMethod.Invoke(null, [payloadObject]);
+
+            _logger.LogInformation(
+                "3Tide frontend transformation registered.");
+        }
+        catch (TargetInvocationException exception)
+        {
+            _logger.LogError(
+                exception.InnerException ?? exception,
+                "File Transformation rejected the 3Tide registration.");
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Unable to register the 3Tide transformation.");
+            _logger.LogError(
+                exception,
+                "Unable to register the 3Tide transformation.");
         }
 
         return Task.CompletedTask;

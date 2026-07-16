@@ -1,73 +1,60 @@
 #threetide-hero {
     position: relative;
-    min-height: 440px;
+    min-height: clamp(390px, 52vw, 620px);
     margin: 0 2.5% 2.5rem;
     overflow: hidden;
     border-radius: 18px;
     color: #fff;
-    background: radial-gradient( circle at 78% 35%, rgba(229, 9, 20, 0.38), transparent 34% ), linear-gradient( 105deg, #080808 0%, #151515 55%, #260307 100% );
-    box-shadow: 0 20px 70px rgba(0, 0, 0, 0.46);
+    background: #090909;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.52);
+    isolation: isolate;
 }
+
 .threetide-hero-backdrop {
     position: absolute;
     inset: 0;
-    background-position: center 25%;
+    z-index: -3;
+    background-position: center 24%;
     background-repeat: no-repeat;
     background-size: cover;
     transform: scale(1.015);
 }
 
-.threetide-hero-shade {
+.threetide-hero-preview-video {
     position: absolute;
     inset: 0;
-    background: linear-gradient( 90deg, rgba(0, 0, 0, 0.96) 0%, rgba(0, 0, 0, 0.76) 34%, rgba(0, 0, 0, 0.25) 68%, transparent 100% ), linear-gradient( 0deg, #090909 0%, transparent 42% );
+    z-index: -3;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
 }
 
-.threetide-hero-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.7rem;
-    margin-bottom: 1rem;
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 0.95rem;
-    font-weight: 650;
+.threetide-hero-preview-video--active {
+    opacity: 1;
 }
 
-.threetide-hero-actions button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.45rem;
+.threetide-hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background: linear-gradient( 90deg, rgba(0, 0, 0, 0.97) 0%, rgba(0, 0, 0, 0.88) 23%, rgba(0, 0, 0, 0.54) 52%, rgba(0, 0, 0, 0.12) 78%, transparent 100% ), linear-gradient( 0deg, #090909 0%, rgba(9, 9, 9, 0.62) 16%, transparent 48% );
 }
-
-.threetide-hero-actions .material-icons {
-    font-size: 1.45rem;
-}
-
-.threetide-hero-primary:hover {
-    background: #ff2631;
-    transform: scale(1.035);
-}
-
-.threetide-hero-secondary:hover {
-    background: rgba(255, 255, 255, 0.25);
-}
-    #threetide-hero::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background: linear-gradient( 90deg, rgba(0, 0, 0, 0.25), transparent 55% );
-    }
 
 .threetide-hero-content {
-    position: relative;
-    z-index: 1;
-    max-width: 620px;
-    padding: clamp(3rem, 7vw, 6rem);
+    display: flex;
+    min-height: inherit;
+    max-width: 680px;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(2.5rem, 7vw, 6.5rem);
 }
 
-.threetide-hero-eyebrow {
+.threetide-hero-label {
+    margin-bottom: 0.8rem;
     color: var(--threetide-brand-color, #e50914);
     font-size: 0.9rem;
     font-weight: 800;
@@ -76,16 +63,29 @@
 }
 
 .threetide-hero-content h1 {
-    margin: 0.65rem 0 1rem;
-    font-size: clamp(2.5rem, 6vw, 5.5rem);
-    line-height: 0.95;
+    max-width: 680px;
+    margin: 0 0 1rem;
+    font-size: clamp(2.6rem, 6vw, 5.7rem);
+    line-height: 0.96;
     letter-spacing: -0.055em;
+    text-wrap: balance;
+}
+
+.threetide-hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.96rem;
+    font-weight: 650;
 }
 
 .threetide-hero-content p {
-    max-width: 520px;
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 1.12rem;
+    max-width: 620px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: clamp(1rem, 1.4vw, 1.16rem);
     line-height: 1.55;
 }
 
@@ -93,36 +93,122 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.8rem;
-    margin-top: 1.7rem;
+    margin-top: 1.8rem;
 }
 
     .threetide-hero-actions button {
+        display: inline-flex;
         min-height: 48px;
-        padding: 0 1.5rem;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        padding: 0 1.45rem;
         border: 0;
         border-radius: 8px;
+        font: inherit;
         font-weight: 750;
         cursor: pointer;
+        transition: transform 0.16s ease, background-color 0.16s ease;
     }
 
-.threetide-hero-primary {
+        .threetide-hero-actions button:hover {
+            transform: scale(1.035);
+        }
+
+.threetide-hero-play {
     color: #fff;
     background: var(--threetide-brand-color, #e50914);
 }
 
-.threetide-hero-secondary {
+    .threetide-hero-play:hover {
+        background: #ff2631;
+    }
+
+.threetide-hero-details {
     color: #fff;
-    background: rgba(255, 255, 255, 0.16);
-    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.17);
+    backdrop-filter: blur(14px);
+}
+
+    .threetide-hero-details:hover {
+        background: rgba(255, 255, 255, 0.27);
+    }
+
+.threetide-hero-actions .material-icons {
+    font-size: 1.45rem;
 }
 
 @media (max-width: 700px) {
     #threetide-hero {
-        min-height: 360px;
-        margin-inline: 1rem;
+        min-height: 390px;
+        margin: 0 1rem 2rem;
+        border-radius: 14px;
+    }
+
+    .threetide-hero-overlay {
+        background: linear-gradient( 0deg, rgba(0, 0, 0, 0.98) 0%, rgba(0, 0, 0, 0.78) 55%, rgba(0, 0, 0, 0.25) 100% );
     }
 
     .threetide-hero-content {
-        padding: 3rem 1.5rem;
+        justify-content: flex-end;
+        padding: 2rem 1.5rem 2.4rem;
+    }
+
+        .threetide-hero-content h1 {
+            font-size: clamp(2.2rem, 11vw, 3.7rem);
+        }
+
+        .threetide-hero-content p {
+            display: -webkit-box;
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 4;
+        }
+}
+
+/* --- Carousel-Pfeile fuer den 3Tide Hero-Banner --- */
+
+.threetide-hero-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+#threetide-hero:hover .threetide-hero-nav,
+#threetide-hero:focus-within .threetide-hero-nav {
+    opacity: 1;
+}
+
+.threetide-hero-nav:hover {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.threetide-hero-prev {
+    left: 1rem;
+}
+
+.threetide-hero-next {
+    right: 1rem;
+}
+
+@media (max-width: 700px) {
+    /* Auf Touch-Geraeten gibt's Swipe, Pfeile stoeren nur */
+    .threetide-hero-nav {
+        display: none;
     }
 }

@@ -1,0 +1,20 @@
+[
+  {
+    "guid": "7f91b8a5-0cd1-4e71-a379-70d820dcdac5",
+    "name": "3Tide",
+    "description": "3Tide Branding, Player, Live-TV und optionale Seerr-Integration für Jellyfin.",
+    "overview": "Verwandelt Jellyfin Web in die 3Tide Streaming-Oberfläche.",
+    "owner": "Slimjim-99",
+    "category": "General",
+    "versions": [
+      {
+        "version": "0.2.0.1",
+        "changelog": "Erste Alpha-Version mit Plugin-Einstellungen, Theme-, Player-, Live-TV-, Seerr- und Branding-Grundlage.",
+        "targetAbi": "10.11.11.0",
+        "sourceUrl": "https://github.com/Slimjim-99/jellyfin-plugin-threetide/releases/download/v0.2.0-alpha.1/ThreeTide-0.2.0-alpha.1.zip",
+        "checksum": "9EA804F43F3FE00E7278C227B857A06F",
+        "timestamp": "2026-07-15T19:20:00Z"
+      }
+    ]
+  }
+]

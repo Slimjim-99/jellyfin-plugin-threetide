@@ -1,0 +1,8 @@
+:root{--tide-red:#e50914;--tide-bg:#090909}
+html,body,.backgroundContainer,.mainAnimatedPage,.page{background-color:var(--tide-bg)!important;color:#fff!important}
+.skinHeader{background:linear-gradient(180deg,rgba(0,0,0,.995),rgba(5,5,5,.985))!important}
+.pageTitleWithLogo{display:block!important;width:220px!important;height:58px!important;min-width:220px!important;max-width:220px!important;margin-left:-.45rem!important;background:url("/web/assets/logo/3tide.png") center/172% auto no-repeat!important;color:transparent!important;font-size:0!important;overflow:hidden!important}
+.pageTitleWithLogo img,.pageTitleWithLogo svg{display:none!important}
+.itemProgressBarForeground{background-color:var(--tide-red)!important}
+.cardScalable,.cardImageContainer{border-radius:9px!important}
+.cardImageContainer{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}

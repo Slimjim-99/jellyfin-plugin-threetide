@@ -1,0 +1,279 @@
+/* =========================================================
+   3Tide Custom Home
+   ========================================================= */
+
+.threetide-default-libraries-hidden {
+    display: none !important;
+}
+
+#threetide-home-content {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 2.6vw 1rem;
+}
+
+.threetide-home-section {
+    margin: 0 0 2.6rem;
+}
+
+.threetide-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+}
+
+    .threetide-section-header h2 {
+        margin: 0;
+        color: #fff;
+        font-size: clamp(1.45rem, 2vw, 2rem);
+        font-weight: 700;
+        letter-spacing: -0.035em;
+    }
+
+.threetide-row-controls {
+    display: flex;
+    gap: 0.35rem;
+}
+
+    .threetide-row-controls button {
+        display: grid;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        place-items: center;
+        border: 1px solid rgba(255,255,255,.13);
+        border-radius: 50%;
+        color: #fff;
+        background: rgba(18,18,18,.78);
+        font-size: 2rem;
+        line-height: 1;
+        cursor: pointer;
+        transition: transform .16s ease, background-color .16s ease;
+    }
+
+        .threetide-row-controls button:hover {
+            transform: scale(1.08);
+            background: rgba(255,255,255,.18);
+        }
+
+.threetide-poster-row {
+    display: grid;
+    grid-auto-columns: clamp(155px, 13.2vw, 235px);
+    grid-auto-flow: column;
+    gap: clamp(.65rem, .9vw, 1rem);
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: .4rem .15rem 1.15rem;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+}
+
+    .threetide-poster-row::-webkit-scrollbar {
+        display: none;
+    }
+
+.threetide-poster-card {
+    min-width: 0;
+    color: #fff;
+    cursor: pointer;
+    outline: none;
+    scroll-snap-align: start;
+    transition: transform .18s ease, filter .18s ease;
+}
+
+.threetide-poster-image {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    border-radius: 9px;
+    background: #151515;
+    box-shadow: 0 12px 30px rgba(0,0,0,.36);
+}
+
+    .threetide-poster-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform .3s ease, filter .3s ease;
+    }
+
+.threetide-poster-placeholder {
+    display: grid;
+    height: 100%;
+    padding: 1rem;
+    place-items: center;
+    color: rgba(255,255,255,.68);
+    text-align: center;
+    background: linear-gradient( 135deg, #1c1c1c, #090909 );
+}
+
+.threetide-poster-hover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: .85rem;
+    opacity: 0;
+    background: linear-gradient( 0deg, rgba(0,0,0,.92), transparent 62% );
+    transition: opacity .2s ease;
+}
+
+.threetide-poster-open {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    color: #000;
+    background: #fff;
+    cursor: pointer;
+}
+
+.threetide-poster-hover-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: .15rem;
+    color: rgba(255,255,255,.9);
+    font-size: .78rem;
+    font-weight: 700;
+}
+
+.threetide-poster-card h3 {
+    overflow: hidden;
+    margin: .58rem 0 0;
+    color: rgba(255,255,255,.92);
+    font-size: .95rem;
+    font-weight: 600;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .threetide-poster-card:hover {
+        z-index: 5;
+        transform: translateY(-6px) scale(1.035);
+    }
+
+        .threetide-poster-card:hover img {
+            transform: scale(1.055);
+            filter: brightness(.72);
+        }
+
+        .threetide-poster-card:hover
+        .threetide-poster-hover {
+            opacity: 1;
+        }
+}
+
+/* Live-TV und Seerr */
+
+.threetide-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin: .5rem 0 2.8rem;
+}
+
+.threetide-feature-card {
+    --threetide-feature-image: none;
+    position: relative;
+    min-height: 250px;
+    overflow: hidden;
+    padding: 0;
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 15px;
+    color: #fff;
+    text-align: left;
+    background: var(--threetide-feature-image) center / cover no-repeat, #121212;
+    box-shadow: 0 18px 50px rgba(0,0,0,.38);
+    cursor: pointer;
+    transition: transform .18s ease, border-color .18s ease;
+}
+
+    .threetide-feature-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255,255,255,.25);
+    }
+
+.threetide-feature-shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient( 90deg, rgba(0,0,0,.96) 0%, rgba(0,0,0,.75) 48%, rgba(0,0,0,.2) 100% );
+}
+
+.threetide-request-card
+.threetide-feature-shade {
+    background: linear-gradient( 90deg, rgba(34,0,3,.96) 0%, rgba(15,0,1,.74) 55%, rgba(0,0,0,.28) 100% );
+}
+
+.threetide-feature-content {
+    position: relative;
+    z-index: 1;
+    max-width: 520px;
+    padding: clamp(1.6rem, 3.2vw, 3rem);
+}
+
+.threetide-feature-eyebrow {
+    color: var( --threetide-brand-color, #e50914 );
+    font-size: .78rem;
+    font-weight: 850;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+}
+
+.threetide-feature-content h2 {
+    margin: .5rem 0 .7rem;
+    font-size: clamp(2rem, 3.2vw, 3.4rem);
+    line-height: 1;
+    letter-spacing: -.05em;
+}
+
+.threetide-feature-content p {
+    max-width: 460px;
+    margin: 0;
+    color: rgba(255,255,255,.72);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.threetide-feature-action {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    margin-top: 1.4rem;
+    padding: .75rem 1rem;
+    border-radius: 7px;
+    color: #fff;
+    background: var( --threetide-brand-color, #e50914 );
+    font-weight: 750;
+}
+
+@media (max-width: 800px) {
+    #threetide-home-content {
+        padding-inline: 1rem;
+    }
+
+    .threetide-poster-row {
+        grid-auto-columns: clamp(135px, 38vw, 180px);
+    }
+
+    .threetide-feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .threetide-feature-card {
+        min-height: 220px;
+    }
+
+    .threetide-row-controls {
+        display: none;
+    }
+}

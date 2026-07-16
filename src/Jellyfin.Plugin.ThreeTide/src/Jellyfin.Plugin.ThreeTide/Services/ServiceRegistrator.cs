@@ -1,4 +1,3 @@
-using Jellyfin.Plugin.ThreeTide.Services.Seerr;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.Plugins;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,11 +14,6 @@ public sealed class ServiceRegistrator : IPluginServiceRegistrator
         IServiceCollection serviceCollection,
         IServerApplicationHost applicationHost)
     {
-        serviceCollection.AddHostedService<
-            ThreeTideHostedService>();
-
-        serviceCollection.AddHttpClient<
-            ISeerrService,
-            SeerrService>();
+        serviceCollection.AddHostedService<ThreeTideHostedService>();
     }
 }
