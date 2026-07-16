@@ -1,0 +1,329 @@
+/* =========================================================
+   3Tide Filme / Serien – erste Anpassungsrunde
+   ========================================================= */
+
+.threetide-native-catalog-hidden {
+    display: none !important;
+}
+
+.threetide-catalog,
+.threetide-catalog *,
+.threetide-catalog *::before,
+.threetide-catalog *::after {
+    box-sizing: border-box;
+}
+
+.threetide-catalog {
+    width: 100%;
+
+    padding:
+        1rem
+        2.6vw
+        4rem;
+
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            180deg,
+            #080808,
+            #030303
+        );
+}
+
+.threetide-catalog-hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    min-height:
+        clamp(
+            250px,
+            30vw,
+            430px
+        );
+
+    margin-bottom: 2.4rem;
+
+    padding:
+        clamp(
+            1.5rem,
+            4vw,
+            4rem
+        );
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+
+    border-radius: 18px;
+
+    background:
+        radial-gradient(
+            circle at 78% 25%,
+            rgba(229, 9, 20, 0.22),
+            transparent 32%
+        ),
+        linear-gradient(
+            135deg,
+            #181818,
+            #070707 72%
+        );
+
+    box-shadow:
+        0 22px 60px
+        rgba(0, 0, 0, 0.38);
+}
+
+.threetide-catalog-hero > span {
+    color:
+        var(
+            --threetide-brand-color,
+            #e50914
+        );
+
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.threetide-catalog-hero h1 {
+    max-width: 800px;
+
+    margin:
+        0.9rem
+        0
+        0;
+
+    font-size:
+        clamp(
+            2.4rem,
+            5vw,
+            5.4rem
+        );
+
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+}
+
+.threetide-catalog-section {
+    margin-bottom: 2.6rem;
+}
+
+.threetide-catalog-section header {
+    margin-bottom: 0.9rem;
+}
+
+.threetide-catalog-section h2 {
+    margin: 0;
+
+    font-size:
+        clamp(
+            1.4rem,
+            2vw,
+            2rem
+        );
+
+    letter-spacing: -0.035em;
+}
+
+.threetide-catalog-row {
+    display: grid;
+
+    grid-auto-flow: column;
+    grid-auto-columns:
+        clamp(
+            145px,
+            12vw,
+            210px
+        );
+
+    gap:
+        clamp(
+            0.65rem,
+            0.9vw,
+            1rem
+        );
+
+    overflow-x: auto;
+    overflow-y: visible;
+
+    padding:
+        0.35rem
+        0.1rem
+        1rem;
+
+    scrollbar-width: none;
+
+    scroll-snap-type: x proximity;
+}
+
+.threetide-catalog-row::-webkit-scrollbar {
+    display: none;
+}
+
+.threetide-catalog-card {
+    min-width: 0;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    color: #ffffff;
+
+    background:
+        rgba(255, 255, 255, 0.03);
+
+    cursor: pointer;
+
+    scroll-snap-align: start;
+
+    transition:
+        transform 180ms ease,
+        background-color 180ms ease;
+}
+
+.threetide-catalog-poster {
+    position: relative;
+
+    aspect-ratio: 2 / 3;
+
+    overflow: hidden;
+
+    background: #151515;
+}
+
+.threetide-catalog-poster img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition:
+        transform 220ms ease,
+        filter 220ms ease;
+}
+
+.threetide-catalog-overlay {
+    position: absolute;
+    inset: 0;
+
+    display: grid;
+    place-items: center;
+
+    opacity: 0;
+
+    background:
+        rgba(0, 0, 0, 0.42);
+
+    transition:
+        opacity 180ms ease;
+}
+
+.threetide-catalog-overlay
+.material-icons {
+    display: grid;
+
+    width: 50px;
+    height: 50px;
+
+    place-items: center;
+
+    border-radius: 50%;
+
+    color: #000000;
+
+    background: #ffffff;
+
+    font-size: 2rem;
+}
+
+.threetide-catalog-card h3 {
+    overflow: hidden;
+
+    margin:
+        0.7rem
+        0.72rem
+        0;
+
+    font-size: 0.88rem;
+    font-weight: 650;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.threetide-catalog-meta {
+    display: flex;
+
+    gap: 0.65rem;
+
+    margin:
+        0.42rem
+        0.72rem
+        0.8rem;
+
+    color:
+        rgba(255, 255, 255, 0.55);
+
+    font-size: 0.72rem;
+}
+
+.threetide-catalog-placeholder {
+    display: grid;
+
+    width: 100%;
+    height: 100%;
+
+    padding: 1rem;
+
+    place-items: center;
+
+    color:
+        rgba(255, 255, 255, 0.66);
+
+    background:
+        linear-gradient(
+            135deg,
+            #242424,
+            #0d0d0d
+        );
+
+    text-align: center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .threetide-catalog-card:hover {
+        z-index: 4;
+
+        transform:
+            translateY(-5px)
+            scale(1.025);
+    }
+
+    .threetide-catalog-card:hover img {
+        transform: scale(1.05);
+        filter: brightness(0.72);
+    }
+
+    .threetide-catalog-card:hover
+    .threetide-catalog-overlay {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 850px) {
+    .threetide-catalog {
+        padding-inline: 1rem;
+    }
+
+    .threetide-catalog-row {
+        grid-auto-columns:
+            clamp(
+                135px,
+                31vw,
+                175px
+            );
+    }
+}
