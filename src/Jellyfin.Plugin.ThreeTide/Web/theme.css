@@ -93,11 +93,15 @@ html, body, .backgroundContainer, .mainAnimatedPage, .page {
     flex: 0 0 auto;
 }
 
-/* Auf Unterseiten (nicht Startseite): Home-Button und Hamburger
-   ausblenden - das Logo selbst navigiert ja schon per Klick
-   zur Startseite (siehe runtime.js). Zurück-Button bleibt. */
-body:not(:has(.homePage, .view-home, .homeSectionsContainer))
-.skinHeader .headerHomeButton,
+/* Haus-Button komplett ausblenden - das Logo selbst navigiert
+   ja schon per Klick zur Startseite (siehe runtime.js), der
+   native Button ist also redundant. */
+.skinHeader .headerHomeButton {
+    display: none !important;
+}
+
+/* Auf Unterseiten (nicht Startseite): Hamburger zusaetzlich
+   ausblenden. Zurueck-Button bleibt. */
 body:not(:has(.homePage, .view-home, .homeSectionsContainer))
 .skinHeader .mainDrawerButton {
     display: none !important;

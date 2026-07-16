@@ -497,6 +497,33 @@
                         }
                     }
                 );
+            },
+
+            requestMedia(
+                mediaId,
+                mediaType,
+                seasons = null
+            ) {
+                const body = {
+                    mediaId,
+                    mediaType
+                };
+
+                if (
+                    mediaType === "tv" &&
+                    Array.isArray(seasons) &&
+                    seasons.length
+                ) {
+                    body.seasons = seasons;
+                }
+
+                return request(
+                    "ThreeTide/Seerr/Request",
+                    {
+                        method: "POST",
+                        body
+                    }
+                );
             }
         }
     };

@@ -25,6 +25,36 @@
         font-size: 1.4rem;
     }
 
+.threetide-library-links {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-left: 0.6rem;
+}
+
+.threetide-library-link {
+    padding: 0.5rem 0.85rem;
+    border: 0;
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.78);
+    background: transparent;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+    .threetide-library-link:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+@media (max-width: 800px) {
+    .threetide-library-links {
+        display: none;
+    }
+}
+
 .threetide-search-overlay {
     position: fixed;
     inset: 0;
