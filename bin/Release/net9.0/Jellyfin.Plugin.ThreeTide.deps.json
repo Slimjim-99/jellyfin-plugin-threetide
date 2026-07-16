@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "Jellyfin.Plugin.ThreeTide/0.2.0.2": {
+        "runtime": {
+          "Jellyfin.Plugin.ThreeTide.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Jellyfin.Plugin.ThreeTide/0.2.0.2": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

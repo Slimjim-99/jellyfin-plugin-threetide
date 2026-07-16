@@ -1,0 +1,4 @@
+C:\Plugin\ThreeTide-Plugin-GitHubReady-0.1.2\jellyfin-plugin-threetide\src\Jellyfin.Plugin.ThreeTide\bin\Release\net9.0\publish\Jellyfin.Plugin.ThreeTide.dll
+C:\Plugin\ThreeTide-Plugin-GitHubReady-0.1.2\jellyfin-plugin-threetide\src\Jellyfin.Plugin.ThreeTide\bin\Release\net9.0\publish\Jellyfin.Plugin.ThreeTide.deps.json
+C:\Plugin\ThreeTide-Plugin-GitHubReady-0.1.2\jellyfin-plugin-threetide\src\Jellyfin.Plugin.ThreeTide\bin\Release\net9.0\publish\Jellyfin.Plugin.ThreeTide.pdb
+C:\Plugin\ThreeTide-Plugin-GitHubReady-0.1.2\jellyfin-plugin-threetide\src\Jellyfin.Plugin.ThreeTide\bin\Release\net9.0\publish\Jellyfin.Plugin.ThreeTide.xml

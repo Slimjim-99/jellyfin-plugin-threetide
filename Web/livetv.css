@@ -1,0 +1,35 @@
+body:has(.guideVerticalScroller) .headerTabs .emby-tab-button:nth-child(n+3) {
+    display: none !important
+}
+
+.guideVerticalScroller {
+    background: #090909 !important
+}
+
+.programCell, .guideProgram, .programGridItem {
+    background: #171717 !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-right: 2px solid rgba(0, 0, 0, 0.75) !important;
+    border-radius: 6px !important;
+    padding: 0.35rem 0.6rem !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    transition: background-color 0.12s ease !important;
+}
+
+    .programCell:hover, .guideProgram:hover, .programGridItem:hover {
+        background: #232323 !important;
+        z-index: 2 !important;
+    }
+
+/* Deutlicher Zwischenraum zwischen den Sender-Zeilen */
+.guideVerticalScroller .channelProgramsItem,
+.guideVerticalScroller [class*="channelPrograms"] {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.currentTimeIndicator, .guideCurrentTimeIndicator, .nowIndicator {
+    background: #e50914 !important
+}

@@ -1,0 +1,389 @@
+/* =========================================================
+   3Tide UI Core
+   ========================================================= */
+
+:root {
+    --threetide-ui-red: var(--threetide-brand-color, #e50914);
+    --threetide-ui-panel: rgba(20, 20, 20, 0.96);
+    --threetide-ui-border: rgba(255, 255, 255, 0.13);
+    --threetide-ui-muted: rgba(255, 255, 255, 0.68);
+}
+
+/* Toasts */
+
+.threetide-toast-root {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 100000;
+    display: flex;
+    width: min(390px, calc(100vw - 2rem));
+    flex-direction: column;
+    gap: 0.7rem;
+    pointer-events: none;
+}
+
+.threetide-toast {
+    overflow: hidden;
+    border: 1px solid var(--threetide-ui-border);
+    border-radius: 12px;
+    opacity: 0;
+    background: rgba(18, 18, 18, 0.97);
+    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.5);
+    transform: translateX(24px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    backdrop-filter: blur(18px);
+    pointer-events: auto;
+}
+
+.threetide-toast-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.threetide-toast-out {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+.threetide-toast-content {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: start;
+    gap: 0.8rem;
+    padding: 0.95rem 1rem;
+}
+
+.threetide-toast-text {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.18rem;
+    color: rgba(255, 255, 255, 0.83);
+    font-size: 0.92rem;
+    line-height: 1.42;
+}
+
+    .threetide-toast-text strong {
+        color: #fff;
+        font-size: 0.96rem;
+    }
+
+.threetide-toast-close,
+.threetide-modal-close {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    color: #fff;
+    background: transparent;
+    cursor: pointer;
+}
+
+    .threetide-toast-close:hover,
+    .threetide-modal-close:hover {
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+.threetide-toast-success {
+    border-left: 4px solid #58cf82;
+}
+
+.threetide-toast-error {
+    border-left: 4px solid #ff5b65;
+}
+
+.threetide-toast-warning {
+    border-left: 4px solid #f1b64a;
+}
+
+.threetide-toast-info {
+    border-left: 4px solid var(--threetide-ui-red);
+}
+
+/* Spinner */
+
+.threetide-spinner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.threetide-spinner-ring {
+    width: 30px;
+    height: 30px;
+    box-sizing: border-box;
+    border: 3px solid rgba(255, 255, 255, 0.18);
+    border-top-color: var(--threetide-ui-red);
+    border-radius: 50%;
+    animation: threetide-spin 0.75s linear infinite;
+}
+
+.threetide-spinner-label {
+    font-size: 0.95rem;
+}
+
+@keyframes threetide-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Loading overlay */
+
+.threetide-ui-loading {
+    position: relative !important;
+    min-height: 120px;
+}
+
+.threetide-loading-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    border-radius: inherit;
+    background: rgba(8, 8, 8, 0.76);
+    backdrop-filter: blur(5px);
+}
+
+/* Skeletons */
+
+.threetide-skeleton-card {
+    min-width: 0;
+}
+
+.threetide-skeleton-image,
+.threetide-skeleton-line {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.085);
+}
+
+.threetide-skeleton-image {
+    aspect-ratio: 2 / 3;
+    border-radius: 9px;
+}
+
+.threetide-skeleton-line {
+    height: 12px;
+    margin-top: 0.65rem;
+    border-radius: 999px;
+}
+
+.threetide-skeleton-line-wide {
+    width: 82%;
+}
+
+.threetide-skeleton-line-small {
+    width: 46%;
+}
+
+.threetide-skeleton-image::after,
+.threetide-skeleton-line::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient( 100deg, transparent 20%, rgba(255, 255, 255, 0.09) 48%, transparent 75% );
+    transform: translateX(-100%);
+    animation: threetide-skeleton 1.4s ease-in-out infinite;
+}
+
+@keyframes threetide-skeleton {
+    to {
+        transform: translateX(100%);
+    }
+}
+
+/* Modal */
+
+html.threetide-modal-open,
+html.threetide-modal-open body {
+    overflow: hidden !important;
+}
+
+.threetide-modal-root {
+    position: relative;
+    z-index: 100001;
+}
+
+.threetide-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100001;
+    display: grid;
+    padding: clamp(1rem, 3vw, 2.5rem);
+    place-items: center;
+    opacity: 0;
+    background: rgba(0, 0, 0, 0.78);
+    transition: opacity 0.2s ease;
+    backdrop-filter: blur(9px);
+}
+
+.threetide-modal-visible {
+    opacity: 1;
+}
+
+.threetide-modal-closing {
+    opacity: 0;
+}
+
+.threetide-modal {
+    display: flex;
+    width: min(1100px, 100%);
+    max-height: calc(100vh - 4rem);
+    overflow: hidden;
+    flex-direction: column;
+    border: 1px solid var(--threetide-ui-border);
+    border-radius: 18px;
+    color: #fff;
+    background: var(--threetide-ui-panel);
+    box-shadow: 0 30px 100px rgba(0, 0, 0, 0.72);
+    transform: translateY(18px) scale(0.985);
+    transition: transform 0.22s ease;
+}
+
+.threetide-modal-visible .threetide-modal {
+    transform: translateY(0) scale(1);
+}
+
+.threetide-modal-small {
+    width: min(480px, 100%);
+}
+
+.threetide-modal-medium {
+    width: min(760px, 100%);
+}
+
+.threetide-modal-large {
+    width: min(1100px, 100%);
+}
+
+.threetide-modal-full {
+    width: min(1500px, 100%);
+    height: calc(100vh - 3rem);
+}
+
+.threetide-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 68px;
+    padding: 0.8rem 1.2rem;
+    border-bottom: 1px solid var(--threetide-ui-border);
+}
+
+    .threetide-modal-header h2 {
+        margin: 0;
+        font-size: clamp(1.35rem, 2vw, 1.9rem);
+        letter-spacing: -0.035em;
+    }
+
+.threetide-modal-body {
+    min-height: 0;
+    overflow: auto;
+    padding: clamp(1rem, 2.5vw, 2rem);
+}
+
+/* Buttons */
+
+.threetide-button {
+    min-height: 44px;
+    padding: 0 1.15rem;
+    border: 0;
+    border-radius: 8px;
+    color: #fff;
+    font: inherit;
+    font-weight: 750;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+    .threetide-button:hover {
+        transform: scale(1.025);
+    }
+
+.threetide-button-primary {
+    background: var(--threetide-ui-red);
+}
+
+    .threetide-button-primary:hover {
+        background: #ff2631;
+    }
+
+.threetide-button-secondary {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+    .threetide-button-secondary:hover {
+        background: rgba(255, 255, 255, 0.22);
+    }
+
+.threetide-button-danger {
+    background: #b71c27;
+}
+
+    .threetide-button-danger:hover {
+        background: #d3212e;
+    }
+
+/* Confirmation */
+
+.threetide-confirm p {
+    margin: 0;
+    color: var(--threetide-ui-muted);
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+.threetide-confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.6rem;
+}
+
+.threetide-ui-icon {
+    font-size: 1.35rem;
+}
+
+@media (max-width: 700px) {
+    .threetide-toast-root {
+        top: 0.75rem;
+        right: 0.75rem;
+        left: 0.75rem;
+        width: auto;
+    }
+
+    .threetide-modal-backdrop {
+        align-items: end;
+        padding: 0;
+    }
+
+    .threetide-modal {
+        width: 100%;
+        max-height: 92vh;
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: 18px 18px 0 0;
+    }
+
+    .threetide-modal-full {
+        height: 92vh;
+    }
+
+    .threetide-confirm-actions {
+        flex-direction: column-reverse;
+    }
+
+        .threetide-confirm-actions button {
+            width: 100%;
+        }
+}
