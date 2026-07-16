@@ -25,6 +25,18 @@ public static class IndexHtmlTransformation
             return html;
         }
 
+        /*
+         * File Transformation may also match Webpack chunks whose
+         * filenames contain "index-html".
+         *
+         * Those files are JavaScript and must never receive HTML,
+         * CSS or script tags appended to them.
+         */
+        if (!IsHtmlDocument(html))
+        {
+            return html;
+        }
+
         PluginConfiguration config =
             Plugin.Instance?.Configuration ??
             new PluginConfiguration();
@@ -52,9 +64,6 @@ public static class IndexHtmlTransformation
             Plugin.ReadEmbeddedText("discover.css"),
             Plugin.ReadEmbeddedText("catalog.css")
         ];
-
-
-       
 
         string brandingCss =
             Plugin.BrandingService.BuildCss();
@@ -102,8 +111,10 @@ public static class IndexHtmlTransformation
 
         string uiScript =
             Plugin.ReadEmbeddedText("ui.js");
+
         string catalogScript =
-            Plugin.ReadEmbeddedText("catalog.js"); 
+            Plugin.ReadEmbeddedText("catalog.js");
+
         string discoverScript =
             Plugin.ReadEmbeddedText("discover.js");
 
@@ -118,7 +129,6 @@ public static class IndexHtmlTransformation
 
         string searchScript =
             Plugin.ReadEmbeddedText("search.js");
-
 
         string runtimeScript =
             Plugin.ReadEmbeddedText("runtime.js");
@@ -143,7 +153,7 @@ window.__THREETIDE_CONFIG__ = {browserConfig};
 
 <script id="threetide-catalog-script">
 {catalogScript}
-</script>  
+</script>
 
 <script id="threetide-discover-script">
 {discoverScript}
@@ -163,8 +173,7 @@ window.__THREETIDE_CONFIG__ = {browserConfig};
 
 <script id="threetide-search-script">
 {searchScript}
-</script> 
-
+</script>
 
 <script id="threetide-runtime-script">
 {runtimeScript}
@@ -176,14 +185,52 @@ window.__THREETIDE_CONFIG__ = {browserConfig};
                 "</body>",
                 StringComparison.OrdinalIgnoreCase);
 
-        if (bodyIndex >= 0)
+        /*
+         * Never append the injection to arbitrary content.
+         * If no closing body tag exists, return the original file.
+         */
+        if (bodyIndex < 0)
         {
-            return html.Insert(
-                bodyIndex,
-                injection);
+            return html;
         }
 
-        return html + injection;
+        return html.Insert(
+            bodyIndex,
+            injection);
+    }
+
+    private static bool IsHtmlDocument(string contents)
+    {
+        if (string.IsNullOrWhiteSpace(contents))
+        {
+            return false;
+        }
+
+        bool hasHtmlRoot =
+            contents.Contains(
+                "<html",
+                StringComparison.OrdinalIgnoreCase);
+
+        bool hasHead =
+            contents.Contains(
+                "<head",
+                StringComparison.OrdinalIgnoreCase);
+
+        bool hasBody =
+            contents.Contains(
+                "<body",
+                StringComparison.OrdinalIgnoreCase);
+
+        bool hasClosingBody =
+            contents.Contains(
+                "</body>",
+                StringComparison.OrdinalIgnoreCase);
+
+        return
+            hasHtmlRoot &&
+            hasHead &&
+            hasBody &&
+            hasClosingBody;
     }
 
     private static string ExtractContents(object? state)
