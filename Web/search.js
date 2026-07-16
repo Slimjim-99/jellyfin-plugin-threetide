@@ -1,5 +1,8 @@
+/*
+ * 3Tide Search JS
+ */
 
-Search · JS
+
     (() => {
         "use strict";
 
