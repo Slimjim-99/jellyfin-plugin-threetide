@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "qmpo74/n/hM=",
+  "dgSpecHash": "LMSXFDf0gus=",
   "success": true,
-  "projectFilePath": "C:\\Plugin\\ThreeTide-Plugin-GitHubReady-0.1.2\\jellyfin-plugin-threetide\\src\\Jellyfin.Plugin.ThreeTide\\Jellyfin.Plugin.ThreeTide.csproj",
+  "projectFilePath": "C:\\Plugin\\ThreeTide-Plugin-GitHubReady-0.1.2\\jellyfin-plugin-threetide\\Jellyfin.Plugin.ThreeTide.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Administrator\\.nuget\\packages\\bitfaster.caching\\2.5.4\\bitfaster.caching.2.5.4.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\diacritics\\4.0.17\\diacritics.4.0.17.nupkg.sha512",

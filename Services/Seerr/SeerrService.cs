@@ -171,10 +171,61 @@ public sealed class SeerrService : ISeerrService
             cancellationToken);
     }
 
+    /// <inheritdoc />
+    public Task<JsonObject> RequestMediaAsync(
+        int mediaId,
+        string mediaType,
+        int[]? seasons = null,
+        CancellationToken cancellationToken = default)
+    {
+        if (mediaId <= 0)
+        {
+            throw new ArgumentException(
+                "Ungültige Medien-ID.",
+                nameof(mediaId));
+        }
+
+        string normalizedMediaType =
+            mediaType?.Trim().ToLowerInvariant() switch
+            {
+                "tv" => "tv",
+                "movie" => "movie",
+                _ => throw new ArgumentException(
+                    "mediaType muss 'movie' oder 'tv' sein.",
+                    nameof(mediaType))
+            };
+
+        JsonObject requestBody = new()
+        {
+            ["mediaId"] = mediaId,
+            ["mediaType"] = normalizedMediaType
+        };
+
+        if (normalizedMediaType == "tv" &&
+            seasons is { Length: > 0 })
+        {
+            JsonArray seasonsArray = new();
+
+            foreach (int season in seasons)
+            {
+                seasonsArray.Add(season);
+            }
+
+            requestBody["seasons"] = seasonsArray;
+        }
+
+        return SendAsync(
+            HttpMethod.Post,
+            "request",
+            cancellationToken,
+            requestBody);
+    }
+
     private async Task<JsonObject> SendAsync(
         HttpMethod method,
         string relativePath,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        JsonObject? jsonBody = null)
     {
         PluginConfiguration configuration =
             GetConfiguration();
@@ -192,6 +243,15 @@ public sealed class SeerrService : ISeerrService
         request.Headers.TryAddWithoutValidation(
             "X-Api-Key",
             configuration.SeerrApiKey.Trim());
+
+        if (jsonBody is not null)
+        {
+            request.Content =
+                new StringContent(
+                    jsonBody.ToJsonString(),
+                    System.Text.Encoding.UTF8,
+                    "application/json");
+        }
 
         using HttpResponseMessage response =
             await _httpClient.SendAsync(

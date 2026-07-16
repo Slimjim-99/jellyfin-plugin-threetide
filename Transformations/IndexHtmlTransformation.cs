@@ -44,6 +44,7 @@ public static class IndexHtmlTransformation
         List<string> styles =
         [
             Plugin.ReadEmbeddedText("theme.css"),
+            Plugin.ReadEmbeddedText("header.css"),
             Plugin.ReadEmbeddedText("hero.css"),
             Plugin.ReadEmbeddedText("home.css"),
             Plugin.ReadEmbeddedText("search.css"),
@@ -113,6 +114,9 @@ public static class IndexHtmlTransformation
         string discoverScript =
             Plugin.ReadEmbeddedText("discover.js");
 
+        string headerScript =
+            Plugin.ReadEmbeddedText("header.js");
+
         string heroScript =
             Plugin.ReadEmbeddedText("hero.js");
 
@@ -145,6 +149,10 @@ window.__THREETIDE_CONFIG__ = {browserConfig};
 
 <script id="threetide-discover-script">
 {discoverScript}
+</script>
+
+<script id="threetide-header-script">
+{headerScript}
 </script>
 
 <script id="threetide-hero-script">

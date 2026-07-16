@@ -2,22 +2,17 @@
     "use strict";
 
     const ROOT_ID = "threetide-home-content";
-    const RETRY_DELAY_MS = 1000;
+    const RETRY_DELAY_MS = 900;
+    const MAX_RETRIES = 30;
 
     let started = false;
     let loading = false;
     let observer = null;
     let retryTimer = null;
-
-    function getConfig() {
-        return window.__THREETIDE_CONFIG__ || {};
-    }
+    let retryCount = 0;
 
     function getApiClient() {
-        if (
-            typeof ApiClient !== "undefined" &&
-            ApiClient
-        ) {
+        if (typeof ApiClient !== "undefined" && ApiClient) {
             return ApiClient;
         }
 
@@ -30,17 +25,14 @@
 
     function escapeHtml(value) {
         const element = document.createElement("div");
-
-        element.textContent = String(value || "");
-
+        element.textContent = String(value ?? "");
         return element.innerHTML;
     }
 
     function findHomeContainer() {
         return document.querySelector(
             ".homeSectionsContainer, .homeSections, #homeTab, " +
-            ".homePage, .view-home, [data-type='home'], " +
-            ".page.homePage"
+            ".homePage, .view-home, [data-type='home'], .page.homePage"
         );
     }
 
@@ -48,102 +40,69 @@
         return Boolean(findHomeContainer());
     }
 
-    function getPosterUrl(item) {
+    function getImageUrl(item, type = "Primary", width = 500) {
         const client = getApiClient();
-        const primaryTag = item?.ImageTags?.Primary;
 
-        if (
-            !client ||
-            !item?.Id ||
-            !primaryTag
-        ) {
+        if (!client || !item?.Id) {
             return "";
         }
 
-        return client.getUrl(
-            `Items/${item.Id}/Images/Primary`,
-            {
-                tag: primaryTag,
-                maxWidth: 500,
-                quality: 88
-            }
-        );
-    }
-
-    function getBackdropUrl(item) {
-        const client = getApiClient();
-
-        if (
-            !client ||
-            !item?.Id ||
-            !item.BackdropImageTags?.length
-        ) {
+        if (type === "Primary" && !item?.ImageTags?.Primary) {
             return "";
         }
 
-        return client.getUrl(
-            `Items/${item.Id}/Images/Backdrop/0`,
-            {
-                tag: item.BackdropImageTags[0],
-                maxWidth: 1600,
-                quality: 86
-            }
-        );
+        if (type === "Backdrop" && !item?.BackdropImageTags?.length) {
+            return "";
+        }
+
+        const path =
+            type === "Backdrop"
+                ? `Items/${item.Id}/Images/Backdrop/0`
+                : `Items/${item.Id}/Images/Primary`;
+
+        const tag =
+            type === "Backdrop"
+                ? item.BackdropImageTags[0]
+                : item.ImageTags.Primary;
+
+        return client.getUrl(path, {
+            tag,
+            maxWidth: width,
+            quality: 88
+        });
     }
 
-    async function loadItems(type, limit = 12) {
+    async function getItems(parameters) {
         const client = getApiClient();
         const userId = getCurrentUserId();
 
         if (!client || !userId) {
             throw new Error(
-                "Jellyfin ApiClient oder Benutzer ist nicht verfügbar."
+                "Jellyfin ApiClient oder Benutzer ist nicht verf\u00fcgbar."
             );
         }
 
-        const parameters = {
+        const defaults = {
             Recursive: true,
-            IncludeItemTypes: type,
-            SortBy: "DateCreated,PremiereDate",
-            SortOrder: "Descending",
-            Limit: limit,
             Fields:
-                "Overview,ProductionYear,CommunityRating," +
-                "PrimaryImageAspectRatio," +
-                "BackdropImageTags",
+                "Overview,ProductionYear,CommunityRating,OfficialRating," +
+                "RunTimeTicks,PrimaryImageAspectRatio,BackdropImageTags,UserData",
             ImageTypeLimit: 1,
             EnableImages: true,
             EnableUserData: true
         };
 
-        if (typeof client.getItems === "function") {
-            const response =
-                await client.getItems(
-                    userId,
-                    parameters
-                );
+        const request = {
+            ...defaults,
+            ...parameters
+        };
 
+        if (typeof client.getItems === "function") {
+            const response = await client.getItems(userId, request);
             return response?.Items || [];
         }
 
-        const url = client.getUrl(
-            `Users/${userId}/Items`,
-            {
-                recursive: true,
-                includeItemTypes: type,
-                sortBy: "DateCreated,PremiereDate",
-                sortOrder: "Descending",
-                limit,
-                fields:
-                    "Overview,ProductionYear,CommunityRating," +
-                    "PrimaryImageAspectRatio," +
-                    "BackdropImageTags",
-                imageTypeLimit: 1,
-                enableImages: true,
-                enableUserData: true
-            }
-        );
-
+        const url = client.getUrl(`Users/${userId}/Items`, request);
         const response = await client.ajax({
             type: "GET",
             url,
@@ -153,321 +112,308 @@
         return response?.Items || [];
     }
 
+    function loadLatest(type, limit = 14) {
+        return getItems({
+            IncludeItemTypes: type,
+            SortBy: "DateCreated,PremiereDate",
+            SortOrder: "Descending",
+            Limit: limit
+        });
+    }
+
+    function loadContinueWatching(limit = 10) {
+        return getItems({
+            IncludeItemTypes: "Movie,Episode",
+            Filters: "IsResumable",
+            SortBy: "DatePlayed",
+            SortOrder: "Descending",
+            Limit: limit
+        });
+    }
+
+    function loadTopTen(limit = 10) {
+        return getItems({
+            IncludeItemTypes: "Movie,Series",
+            SortBy: "CommunityRating,DateCreated",
+            SortOrder: "Descending",
+            MinCommunityRating: 5,
+            Limit: limit
+        });
+    }
+
     function openDetails(itemId) {
-        window.location.hash =
-            `/details?id=${encodeURIComponent(itemId)}`;
-    }
-
-    function createPosterCard(item) {
-        const card = document.createElement("article");
-
-        card.className = "threetide-poster-card";
-        card.tabIndex = 0;
-        card.setAttribute("role", "link");
-        card.setAttribute(
-            "aria-label",
-            item.Name || "Titel öffnen"
-        );
-
-        const posterUrl = getPosterUrl(item);
-
-        const rating =
-            typeof item.CommunityRating === "number"
-                ? item.CommunityRating.toFixed(1)
-                : "";
-
-        const year =
-            item.ProductionYear || "";
-
-        card.innerHTML = `
-            <div class="threetide-poster-image">
-                ${posterUrl
-                ? `<img
-                            src="${escapeHtml(posterUrl)}"
-                            alt="${escapeHtml(item.Name)}"
-                            loading="lazy">`
-                : `<div class="threetide-poster-placeholder">
-                            ${escapeHtml(item.Name)}
-                           </div>`
-            }
-
-                <div class="threetide-poster-hover">
-                    <button
-                        type="button"
-                        class="threetide-poster-open"
-                        aria-label="Weitere Infos">
-                        <span
-                            class="material-icons"
-                            aria-hidden="true">
-                            play_arrow
-                        </span>
-                    </button>
-
-                    <div class="threetide-poster-hover-meta">
-                        ${year
-                ? `<span>${escapeHtml(year)}</span>`
-                : ""
-            }
-
-                        ${rating
-                ? `<span>★ ${escapeHtml(rating)}</span>`
-                : ""
-            }
-                    </div>
-                </div>
-            </div>
-
-            <h3>${escapeHtml(item.Name)}</h3>
-        `;
-
-        function activate() {
-            openDetails(item.Id);
-        }
-
-        card.addEventListener("click", activate);
-
-        card.addEventListener("keydown", (event) => {
-            if (
-                event.key === "Enter" ||
-                event.key === " "
-            ) {
-                event.preventDefault();
-                activate();
-            }
-        });
-
-        return card;
-    }
-
-    function createContentSection(title, items) {
-        const section = document.createElement("section");
-
-        section.className =
-            "threetide-home-section";
-
-        const header =
-            document.createElement("header");
-
-        header.className =
-            "threetide-section-header";
-
-        header.innerHTML = `
-            <h2>${escapeHtml(title)}</h2>
-
-            <div class="threetide-row-controls">
-                <button
-                    type="button"
-                    data-direction="previous"
-                    aria-label="Nach links">
-                    ‹
-                </button>
-
-                <button
-                    type="button"
-                    data-direction="next"
-                    aria-label="Nach rechts">
-                    ›
-                </button>
-            </div>
-        `;
-
-        const row = document.createElement("div");
-
-        row.className = "threetide-poster-row";
-
-        items.forEach((item) => {
-            row.appendChild(
-                createPosterCard(item)
-            );
-        });
-
-        header
-            .querySelector(
-                '[data-direction="previous"]'
-            )
-            ?.addEventListener("click", () => {
-                row.scrollBy({
-                    left: -row.clientWidth * 0.82,
-                    behavior: "smooth"
-                });
-            });
-
-        header
-            .querySelector(
-                '[data-direction="next"]'
-            )
-            ?.addEventListener("click", () => {
-                row.scrollBy({
-                    left: row.clientWidth * 0.82,
-                    behavior: "smooth"
-                });
-            });
-
-        section.append(header, row);
-
-        return section;
-    }
-
-    function createFeatureCard(options) {
-        const card = document.createElement("button");
-
-        card.type = "button";
-        card.className =
-            `threetide-feature-card ${options.className || ""}`;
-
-        if (options.backgroundUrl) {
-            card.style.setProperty(
-                "--threetide-feature-image",
-                `url("${options.backgroundUrl.replace(
-                    /"/g,
-                    "%22"
-                )}")`
-            );
-        }
-
-        card.innerHTML = `
-            <div class="threetide-feature-shade"></div>
-
-            <div class="threetide-feature-content">
-                <span class="threetide-feature-eyebrow">
-                    ${escapeHtml(options.eyebrow)}
-                </span>
-
-                <h2>${escapeHtml(options.title)}</h2>
-
-                <p>${escapeHtml(options.description)}</p>
-
-                <span class="threetide-feature-action">
-                    <span
-                        class="material-icons"
-                        aria-hidden="true">
-                        ${escapeHtml(options.icon)}
-                    </span>
-
-                    ${escapeHtml(options.actionLabel)}
-                </span>
-            </div>
-        `;
-
-        card.addEventListener(
-            "click",
-            options.onClick
-        );
-
-        return card;
+        window.location.hash = `/details?id=${encodeURIComponent(itemId)}`;
     }
 
     function openLiveTv() {
-        window.location.hash =
-            "/livetv?collectionType=livetv";
+        window.location.hash = "/livetv?collectionType=livetv";
     }
 
-    function openSeerr() {
-        const discover =
-            window.ThreeTide?.Discover;
+    function openDiscover() {
+        const discover = window.ThreeTide?.Discover;
 
-        if (
-            discover &&
-            typeof discover.open === "function"
-        ) {
+        if (discover && typeof discover.open === "function") {
+            discover.init?.();
             discover.open();
             return;
         }
 
-        window.ThreeTide?.UI?.error(
+        window.ThreeTide?.UI?.error?.(
             "Das Discover-Modul wurde nicht geladen.",
             "3Tide"
         );
 
         console.error(
-            "[3Tide] ThreeTide.Discover.open ist nicht verfügbar."
+            "[3Tide] ThreeTide.Discover.open ist nicht verf\u00fcgbar."
         );
     }
 
-    function createFeatureSection(
-        movieItems,
-        seriesItems
-    ) {
-        const section =
-            document.createElement("section");
+    function getProgress(item) {
+        const value = Number(item?.UserData?.PlayedPercentage);
 
-        section.className =
-            "threetide-feature-grid";
+        if (!Number.isFinite(value)) {
+            return 0;
+        }
 
-        const liveBackground =
-            getBackdropUrl(
-                movieItems[1] ||
-                movieItems[0]
-            );
+        return Math.max(0, Math.min(100, value));
+    }
 
-        const requestBackground =
-            getBackdropUrl(
-                seriesItems[1] ||
-                seriesItems[0]
-            );
+    function createLandscapeCard(item) {
+        const card = document.createElement("article");
+        card.className = "threetide-landscape-card";
+        card.tabIndex = 0;
+        card.setAttribute("role", "link");
 
-        section.append(
-            createFeatureCard({
-                className:
-                    "threetide-live-card",
+        const image =
+            getImageUrl(item, "Backdrop", 900) ||
+            getImageUrl(item, "Primary", 700);
 
-                eyebrow:
-                    "3Tide Live",
+        const progress = getProgress(item);
 
-                title:
-                    "Live TV",
+        card.innerHTML = `
+            <div class="threetide-landscape-image">
+                ${image
+                ? `<img src="${escapeHtml(image)}"
+                                alt="${escapeHtml(item.Name || "")}"
+                                loading="lazy"
+                                draggable="false">`
+                : `<div class="threetide-card-placeholder">
+                               ${escapeHtml(item.Name || "Titel")}
+                           </div>`
+            }
 
-                description:
-                    "Sender, laufende Sendungen und Live-Programm direkt öffnen.",
+                <div class="threetide-landscape-overlay">
+                    <span class="material-icons">play_arrow</span>
+                </div>
 
-                actionLabel:
-                    "Live ansehen",
+                ${progress > 0
+                ? `<div class="threetide-progress">
+                               <span style="width:${progress}%"></span>
+                           </div>`
+                : ""
+            }
+            </div>
 
-                icon:
-                    "live_tv",
+            <h3>${escapeHtml(item.Name || "Unbekannter Titel")}</h3>
+        `;
 
-                backgroundUrl:
-                    liveBackground,
+        bindCard(card, item.Id);
+        return card;
+    }
 
-                onClick:
-                    openLiveTv
-            })
-        );
+    function createPosterCard(item) {
+        const card = document.createElement("article");
+        card.className = "threetide-poster-card";
+        card.tabIndex = 0;
+        card.setAttribute("role", "link");
 
-        const config = getConfig();
+        const poster = getImageUrl(item, "Primary", 500);
+        const year = item.ProductionYear || "";
+        const rating =
+            typeof item.CommunityRating === "number"
+                ? item.CommunityRating.toFixed(1)
+                : "";
 
-        if (
-            config.enableSeerrButton &&
-            config.seerrUrl
-        ) {
-            section.append(
-                createFeatureCard({
-                    className:
-                        "threetide-request-card",
+        card.innerHTML = `
+            <div class="threetide-poster-image">
+                ${poster
+                ? `<img src="${escapeHtml(poster)}"
+                                alt="${escapeHtml(item.Name || "")}"
+                                loading="lazy"
+                                draggable="false">`
+                : `<div class="threetide-card-placeholder">
+                               ${escapeHtml(item.Name || "Titel")}
+                           </div>`
+            }
 
-                    eyebrow:
-                        "Fehlt dir etwas?",
+                <div class="threetide-poster-overlay">
+                    <span class="material-icons">play_arrow</span>
+                </div>
+            </div>
 
-                    title:
-                        "Film oder Serie anfragen",
+            <div class="threetide-poster-copy">
+                <h3>${escapeHtml(item.Name || "Unbekannter Titel")}</h3>
+                <div>
+                    ${year ? `<span>${escapeHtml(year)}</span>` : ""}
+                    ${rating ? `<span>&#9733; ${escapeHtml(rating)}</span>` : ""}
+                </div>
+            </div>
+        `;
 
-                    description:
-                        "Neue Inhalte bequem über Seerr wünschen.",
+        bindCard(card, item.Id);
+        return card;
+    }
 
-                    actionLabel:
-                        config.label || "Anfragen",
+    function createTopTenCard(item, index) {
+        const card = document.createElement("article");
+        card.className = "threetide-topten-card";
+        card.tabIndex = 0;
+        card.setAttribute("role", "link");
 
-                    icon:
-                        "add_circle",
+        const poster = getImageUrl(item, "Primary", 500);
 
-                    backgroundUrl:
-                        requestBackground,
+        card.innerHTML = `
+            <span class="threetide-topten-number">${index + 1}</span>
 
-                    onClick:
-                        openSeerr
-                })
+            <div class="threetide-topten-poster">
+                ${poster
+                ? `<img src="${escapeHtml(poster)}"
+                                alt="${escapeHtml(item.Name || "")}"
+                                loading="lazy"
+                                draggable="false">`
+                : `<div class="threetide-card-placeholder">
+                               ${escapeHtml(item.Name || "Titel")}
+                           </div>`
+            }
+            </div>
+
+            <h3>${escapeHtml(item.Name || "Unbekannter Titel")}</h3>
+        `;
+
+        bindCard(card, item.Id);
+        return card;
+    }
+
+    function bindCard(card, itemId) {
+        const activate = (event) => {
+            event?.preventDefault();
+            event?.stopPropagation();
+            openDetails(itemId);
+        };
+
+        card.addEventListener("click", activate);
+        card.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                activate(event);
+            }
+        });
+    }
+
+    function createSection(title, className, cards) {
+        const section = document.createElement("section");
+        section.className = `threetide-home-section ${className}`;
+
+        const header = document.createElement("header");
+        header.className = "threetide-section-header";
+        header.innerHTML = `
+            <h2>${escapeHtml(title)}</h2>
+
+            <div class="threetide-row-controls">
+                <button type="button"
+                        data-direction="previous"
+                        aria-label="Zur\u00fcck">
+                    <span class="material-icons">chevron_left</span>
+                </button>
+
+                <button type="button"
+                        data-direction="next"
+                        aria-label="Weiter">
+                    <span class="material-icons">chevron_right</span>
+                </button>
+            </div>
+        `;
+
+        const row = document.createElement("div");
+        row.className = "threetide-content-row";
+
+        cards.forEach((card) => row.appendChild(card));
+
+        header
+            .querySelector('[data-direction="previous"]')
+            ?.addEventListener("click", () => {
+                row.scrollBy({
+                    left: -row.clientWidth * 0.86,
+                    behavior: "smooth"
+                });
+            });
+
+        header
+            .querySelector('[data-direction="next"]')
+            ?.addEventListener("click", () => {
+                row.scrollBy({
+                    left: row.clientWidth * 0.86,
+                    behavior: "smooth"
+                });
+            });
+
+        section.append(header, row);
+        return section;
+    }
+
+    function createLiveTvSpotlight(backgroundItem) {
+        const section = document.createElement("section");
+        section.className = "threetide-live-spotlight";
+
+        const background =
+            getImageUrl(backgroundItem, "Backdrop", 1600) ||
+            getImageUrl(backgroundItem, "Primary", 900);
+
+        if (background) {
+            section.style.setProperty(
+                "--threetide-live-background",
+                `url("${background.replace(/"/g, "%22")}")`
             );
         }
+
+        section.innerHTML = `
+            <div class="threetide-live-shade"></div>
+
+            <div class="threetide-live-content">
+                <div class="threetide-live-heading">
+                    <span class="threetide-live-label">LIVE</span>
+                    <span>3Tide Live TV</span>
+                </div>
+
+                <h2>
+                    Fernsehen, wie du es kennst.<br>
+                    Nur sch\u00f6ner.
+                </h2>
+
+                <button type="button" class="threetide-live-button">
+                    <span class="material-icons">live_tv</span>
+                    Live TV
+                </button>
+            </div>
+
+            <button type="button"
+                    class="threetide-request-shortcut"
+                    aria-label="Film oder Serie anfragen">
+                <span class="material-icons">send</span>
+
+                <span>
+                    <strong>Fehlt dir etwas?</strong>
+                    Film oder Serie direkt in 3Tide anfragen
+                </span>
+            </button>
+        `;
+
+        section
+            .querySelector(".threetide-live-button")
+            ?.addEventListener("click", openLiveTv);
+
+        section
+            .querySelector(".threetide-request-shortcut")
+            ?.addEventListener("click", openDiscover);
 
         return section;
     }
@@ -486,22 +432,16 @@
                     return;
                 }
 
-                section.classList.add(
-                    "threetide-default-libraries-hidden"
-                );
+                section.classList.add("threetide-default-libraries-hidden");
             });
     }
 
     function insertCustomHome(root) {
         const container = findHomeContainer();
-        const hero =
-            document.getElementById("threetide-hero");
+        const hero = document.getElementById("threetide-hero");
 
         if (hero?.parentNode) {
-            hero.parentNode.insertBefore(
-                root,
-                hero.nextSibling
-            );
+            hero.parentNode.insertBefore(root, hero.nextSibling);
             return true;
         }
 
@@ -514,18 +454,11 @@
     }
 
     async function render() {
-        if (
-            loading ||
-            document.getElementById(ROOT_ID)
-        ) {
+        if (loading || document.getElementById(ROOT_ID)) {
             return;
         }
 
-        if (
-            !isHomePage() ||
-            !getApiClient() ||
-            !getCurrentUserId()
-        ) {
+        if (!isHomePage() || !getApiClient() || !getCurrentUserId()) {
             scheduleRetry();
             return;
         }
@@ -534,47 +467,69 @@
 
         try {
             const [
-                movies,
-                series
+                continueWatching,
+                topTen,
+                latestMovies,
+                latestSeries
             ] = await Promise.all([
-                loadItems("Movie", 14),
-                loadItems("Series", 14)
+                loadContinueWatching(10),
+                loadTopTen(10),
+                loadLatest("Movie", 14),
+                loadLatest("Series", 14)
             ]);
 
             if (!isHomePage()) {
                 return;
             }
 
-            const root =
-                document.createElement("div");
-
+            const root = document.createElement("main");
             root.id = ROOT_ID;
-            root.className =
-                "threetide-home-content";
+            root.className = "threetide-home-content";
 
-            if (movies.length || series.length) {
+            root.appendChild(
+                createLiveTvSpotlight(
+                    latestMovies[1] ||
+                    latestSeries[0] ||
+                    latestMovies[0]
+                )
+            );
+
+            if (continueWatching.length) {
                 root.appendChild(
-                    createFeatureSection(
-                        movies,
-                        series
+                    createSection(
+                        "Weiterschauen",
+                        "threetide-landscape-section",
+                        continueWatching.map(createLandscapeCard)
                     )
                 );
             }
 
-            if (movies.length) {
+            if (topTen.length) {
                 root.appendChild(
-                    createContentSection(
-                        "Neueste Filme",
-                        movies
+                    createSection(
+                        "Top 10 heute in 3Tide",
+                        "threetide-topten-section",
+                        topTen.map(createTopTenCard)
                     )
                 );
             }
 
-            if (series.length) {
+            if (latestMovies.length) {
                 root.appendChild(
-                    createContentSection(
-                        "Neueste Serien",
-                        series
+                    createSection(
+                        "Neu im Katalog",
+                        "threetide-poster-section",
+                        latestMovies.map(createPosterCard)
+                    )
+                );
+            }
+
+            if (latestSeries.length) {
+                root.appendChild(
+                    createSection(
+                        "Neue Serien",
+                        "threetide-poster-section",
+                        latestSeries.map(createPosterCard)
                     )
                 );
             }
@@ -585,12 +540,16 @@
                 return;
             }
 
+            hideNativeHomeSections();
+            retryCount = 0;
             clearRetry();
 
             console.info(
                 `[3Tide] Startseite geladen: ` +
-                `${movies.length} Filme, ` +
-                `${series.length} Serien`
+                `${continueWatching.length} Weiterschauen, ` +
+                `${topTen.length} Top 10, ` +
+                `${latestMovies.length} Filme, ` +
+                `${latestSeries.length} Serien`
             );
         } catch (error) {
             console.error(
@@ -605,18 +564,12 @@
     }
 
     function remove() {
-        document
-            .getElementById(ROOT_ID)
-            ?.remove();
+        document.getElementById(ROOT_ID)?.remove();
 
         document
-            .querySelectorAll(
-                ".threetide-default-libraries-hidden"
-            )
+            .querySelectorAll(".threetide-default-libraries-hidden")
             .forEach((element) => {
-                element.classList.remove(
-                    "threetide-default-libraries-hidden"
-                );
+                element.classList.remove("threetide-default-libraries-hidden");
             });
     }
 
@@ -638,15 +591,16 @@
     }
 
     function scheduleRetry() {
-        if (retryTimer !== null) {
+        if (retryTimer !== null || retryCount >= MAX_RETRIES) {
             return;
         }
 
-        retryTimer =
-            window.setTimeout(() => {
-                retryTimer = null;
-                sync();
-            }, RETRY_DELAY_MS);
+        retryCount += 1;
+
+        retryTimer = window.setTimeout(() => {
+            retryTimer = null;
+            sync();
+        }, RETRY_DELAY_MS);
     }
 
     function start() {
@@ -657,26 +611,15 @@
 
         started = true;
 
-        observer =
-            new MutationObserver(sync);
+        observer = new MutationObserver(sync);
+        observer.observe(document.documentElement, {
+            childList: true,
+            subtree: true
+        });
 
-        observer.observe(
-            document.documentElement,
-            {
-                childList: true,
-                subtree: true
-            }
-        );
-
-        window.addEventListener(
-            "hashchange",
-            () => {
-                window.setTimeout(
-                    sync,
-                    150
-                );
-            }
-        );
+        window.addEventListener("hashchange", () => {
+            window.setTimeout(sync, 150);
+        });
 
         sync();
         scheduleRetry();
@@ -684,11 +627,9 @@
 
     function stop() {
         clearRetry();
-
         observer?.disconnect();
         observer = null;
         started = false;
-
         remove();
     }
 

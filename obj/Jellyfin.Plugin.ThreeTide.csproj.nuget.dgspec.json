@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Plugin\\ThreeTide-Plugin-GitHubReady-0.1.2\\jellyfin-plugin-threetide\\src\\Jellyfin.Plugin.ThreeTide\\Jellyfin.Plugin.ThreeTide.csproj": {}
+    "C:\\Plugin\\ThreeTide-Plugin-GitHubReady-0.1.2\\jellyfin-plugin-threetide\\Jellyfin.Plugin.ThreeTide.csproj": {}
   },
   "projects": {
-    "C:\\Plugin\\ThreeTide-Plugin-GitHubReady-0.1.2\\jellyfin-plugin-threetide\\src\\Jellyfin.Plugin.ThreeTide\\Jellyfin.Plugin.ThreeTide.csproj": {
+    "C:\\Plugin\\ThreeTide-Plugin-GitHubReady-0.1.2\\jellyfin-plugin-threetide\\Jellyfin.Plugin.ThreeTide.csproj": {
       "version": "0.2.0.2",
       "restore": {
-        "projectUniqueName": "C:\\Plugin\\ThreeTide-Plugin-GitHubReady-0.1.2\\jellyfin-plugin-threetide\\src\\Jellyfin.Plugin.ThreeTide\\Jellyfin.Plugin.ThreeTide.csproj",
+        "projectUniqueName": "C:\\Plugin\\ThreeTide-Plugin-GitHubReady-0.1.2\\jellyfin-plugin-threetide\\Jellyfin.Plugin.ThreeTide.csproj",
         "projectName": "Jellyfin.Plugin.ThreeTide",
-        "projectPath": "C:\\Plugin\\ThreeTide-Plugin-GitHubReady-0.1.2\\jellyfin-plugin-threetide\\src\\Jellyfin.Plugin.ThreeTide\\Jellyfin.Plugin.ThreeTide.csproj",
+        "projectPath": "C:\\Plugin\\ThreeTide-Plugin-GitHubReady-0.1.2\\jellyfin-plugin-threetide\\Jellyfin.Plugin.ThreeTide.csproj",
         "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
-        "outputPath": "C:\\Plugin\\ThreeTide-Plugin-GitHubReady-0.1.2\\jellyfin-plugin-threetide\\src\\Jellyfin.Plugin.ThreeTide\\obj\\",
+        "outputPath": "C:\\Plugin\\ThreeTide-Plugin-GitHubReady-0.1.2\\jellyfin-plugin-threetide\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

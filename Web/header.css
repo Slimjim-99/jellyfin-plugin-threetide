@@ -1,0 +1,150 @@
+/* =========================================================
+   3Tide Header V1
+   ========================================================= */
+
+.skinHeader {
+    min-height: 76px !important;
+    padding: 0 1.4rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.035) !important;
+    background: linear-gradient( 180deg, rgba(0, 0, 0, 0.98), rgba(0, 0, 0, 0.9) ) !important;
+    box-shadow: none !important;
+}
+
+    .skinHeader .headerTop {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        min-height: 76px !important;
+        gap: 1.6rem !important;
+    }
+
+    .skinHeader .headerLeft {
+        display: flex !important;
+        align-items: center !important;
+        flex: 0 0 auto !important;
+        gap: 1rem !important;
+    }
+
+    .skinHeader .pageTitleWithLogo,
+    .skinHeader .pageTitleWithDefaultLogo,
+    .skinHeader .headerLogo {
+        --threetide-header-logo: url("/web/assets/logo/3tide.png");
+        display: block !important;
+        width: 150px !important;
+        min-width: 150px !important;
+        height: 58px !important;
+        min-height: 58px !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        color: transparent !important;
+        background-image: var(--threetide-header-logo) !important;
+        background-repeat: no-repeat !important;
+        background-position: left center !important;
+        background-size: contain !important;
+        font-size: 0 !important;
+        cursor: pointer !important;
+    }
+
+        .skinHeader .pageTitleWithLogo img,
+        .skinHeader .pageTitleWithLogo svg,
+        .skinHeader .pageTitleWithDefaultLogo img,
+        .skinHeader .pageTitleWithDefaultLogo svg,
+        .skinHeader .headerLogo img,
+        .skinHeader .headerLogo svg {
+            display: none !important;
+        }
+
+.threetide-header-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto;
+    gap: clamp(0.8rem, 1.5vw, 1.8rem);
+    min-width: 0;
+}
+
+    .threetide-header-navigation button {
+        position: relative;
+        padding: 0.65rem 0;
+        border: 0;
+        color: rgba(255, 255, 255, 0.72);
+        background: transparent;
+        font: inherit;
+        font-size: 0.93rem;
+        font-weight: 560;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: color 0.16s ease, transform 0.16s ease;
+    }
+
+        .threetide-header-navigation button::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            bottom: 0.25rem;
+            left: 0;
+            height: 2px;
+            border-radius: 99px;
+            opacity: 0;
+            background: var(--threetide-brand-color, #e50914);
+            transform: scaleX(0.4);
+            transition: opacity 0.16s ease, transform 0.16s ease;
+        }
+
+        .threetide-header-navigation button:hover {
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .threetide-header-navigation button.is-active {
+            color: var(--threetide-brand-color, #e50914);
+            font-weight: 720;
+        }
+
+            .threetide-header-navigation button.is-active::after {
+                opacity: 1;
+                transform: scaleX(1);
+            }
+
+.skinHeader .headerRight {
+    display: flex !important;
+    align-items: center !important;
+    flex: 0 0 auto !important;
+    margin-left: auto !important;
+}
+
+@media (max-width: 1050px) {
+    .threetide-header-navigation {
+        gap: 0.8rem;
+    }
+
+        .threetide-header-navigation button {
+            font-size: 0.82rem;
+        }
+
+    .skinHeader .pageTitleWithLogo,
+    .skinHeader .pageTitleWithDefaultLogo,
+    .skinHeader .headerLogo {
+        width: 125px !important;
+        min-width: 125px !important;
+    }
+}
+
+@media (max-width: 820px) {
+    .threetide-header-navigation {
+        display: none !important;
+    }
+
+    .skinHeader .headerTop {
+        gap: 0.75rem !important;
+    }
+
+    .skinHeader .pageTitleWithLogo,
+    .skinHeader .pageTitleWithDefaultLogo,
+    .skinHeader .headerLogo {
+        width: 118px !important;
+        min-width: 118px !important;
+        height: 52px !important;
+        min-height: 52px !important;
+    }
+}

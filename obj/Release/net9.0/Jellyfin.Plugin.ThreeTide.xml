@@ -57,6 +57,11 @@
             Searches movies and series through Seerr.
             </summary>
         </member>
+        <member name="M:Jellyfin.Plugin.ThreeTide.Controllers.SeerrController.RequestMediaAsync(Jellyfin.Plugin.ThreeTide.Controllers.SeerrRequestBody,System.Threading.CancellationToken)">
+            <summary>
+            Submits a media request to Seerr.
+            </summary>
+        </member>
         <member name="T:Jellyfin.Plugin.ThreeTide.Controllers.ThreeTideApiError">
             <summary>
             Standard error response for the internal 3Tide API.
@@ -65,6 +70,26 @@
         <member name="M:Jellyfin.Plugin.ThreeTide.Controllers.ThreeTideApiError.#ctor(System.String)">
             <summary>
             Standard error response for the internal 3Tide API.
+            </summary>
+        </member>
+        <member name="T:Jellyfin.Plugin.ThreeTide.Controllers.SeerrRequestBody">
+            <summary>
+            Request body for submitting a Seerr media request.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.ThreeTide.Controllers.SeerrRequestBody.MediaId">
+            <summary>
+            Gets or sets the TMDB id of the movie or series.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.ThreeTide.Controllers.SeerrRequestBody.MediaType">
+            <summary>
+            Gets or sets the media type ("movie" or "tv").
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.ThreeTide.Controllers.SeerrRequestBody.Seasons">
+            <summary>
+            Gets or sets the optional season numbers to request (TV only).
             </summary>
         </member>
         <member name="T:Jellyfin.Plugin.ThreeTide.Core.Constants">
@@ -153,6 +178,18 @@
             Zugriff auf die Plugin-Konfiguration.
             </summary>
         </member>
+        <member name="M:Jellyfin.Plugin.ThreeTide.Services.Seerr.ISeerrService.RequestMediaAsync(System.Int32,System.String,System.Int32[],System.Threading.CancellationToken)">
+            <summary>
+            Submits a media request to Seerr.
+            </summary>
+            <param name="mediaId">The TMDB id of the movie or series.</param>
+            <param name="mediaType">Either "movie" or "tv".</param>
+            <param name="seasons">
+            Optional season numbers to request (TV only). Pass null to let
+            Seerr use its default behaviour (typically all seasons).
+            </param>
+            <param name="cancellationToken">Cancellation token.</param>
+        </member>
         <member name="T:Jellyfin.Plugin.ThreeTide.Services.Seerr.SeerrApiException">
             <summary>
             Represents an error returned by the Seerr API.
@@ -191,6 +228,9 @@
             <inheritdoc />
         </member>
         <member name="M:Jellyfin.Plugin.ThreeTide.Services.Seerr.SeerrService.SearchAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Plugin.ThreeTide.Services.Seerr.SeerrService.RequestMediaAsync(System.Int32,System.String,System.Int32[],System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:Jellyfin.Plugin.ThreeTide.Services.ServiceRegistrator">

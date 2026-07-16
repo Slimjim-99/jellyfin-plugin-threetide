@@ -271,6 +271,73 @@
         window.location.assign(url);
     }
 
+    async function submitMediaRequest(item, button) {
+        const api = getApi();
+        const ui = getUi();
+
+        if (!api?.seerr?.requestMedia) {
+            console.error(
+                "[3Tide Discover] Seerr-Request-Funktion " +
+                "ist nicht verfügbar."
+            );
+
+            // Fallback: falls die API-Funktion aus
+            // irgendeinem Grund fehlt, wenigstens die
+            // Seerr-Seite oeffnen statt gar nichts zu tun.
+            openSeerrItem(item);
+            return;
+        }
+
+        const tmdbId = getTmdbId(item);
+
+        if (!tmdbId) {
+            ui?.error?.(
+                "Für diesen Titel wurde keine TMDB-ID " +
+                "gefunden."
+            );
+
+            return;
+        }
+
+        const mediaType =
+            getMediaType(item) === "tv" ? "tv" : "movie";
+
+        const originalLabel = button.innerHTML;
+
+        button.disabled = true;
+        ui?.setLoading?.(button, true, {
+            label: "Wird angefragt",
+            overlay: false
+        });
+
+        try {
+            await api.seerr.requestMedia(
+                Number(tmdbId),
+                mediaType
+            );
+
+            ui?.success?.(
+                `„${getTitle(item)}“ wurde erfolgreich ` +
+                "angefragt."
+            );
+
+            button.innerHTML =
+                '<span class="material-icons" ' +
+                'aria-hidden="true">check_circle</span>' +
+                "Angefragt";
+        } catch (error) {
+            ui?.handleError?.(
+                error,
+                "Die Anfrage konnte nicht übermittelt werden."
+            );
+
+            button.disabled = false;
+            button.innerHTML = originalLabel;
+        } finally {
+            ui?.setLoading?.(button, false);
+        }
+    }
+
     function createEmptyState(
         title,
         message
@@ -1116,12 +1183,15 @@
 
         requestButton.addEventListener(
             "click",
-            (event) => {
+            async (event) => {
                 event.preventDefault();
                 event.stopPropagation();
                 event.stopImmediatePropagation?.();
 
-                openSeerrItem(item);
+                await submitMediaRequest(
+                    item,
+                    requestButton
+                );
             }
         );
 

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Jellyfin.Plugin.ThreeTide")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.2.0.2")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.2.0.2+352022601223600791854b8328ff819ff7922325")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.2.0.2+fbf7279d01699954c1769b03088c78c8eeb52a0b")]
 [assembly: System.Reflection.AssemblyProductAttribute("Jellyfin.Plugin.ThreeTide")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Jellyfin.Plugin.ThreeTide")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.2.0.2")]

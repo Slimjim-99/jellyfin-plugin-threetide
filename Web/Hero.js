@@ -78,6 +78,14 @@
         return null;
     }
 
+    function findHomeContainer() {
+        return document.querySelector(
+            ".homeSectionsContainer, .homeSections, #homeTab, " +
+            ".homePage, .view-home, [data-type='home'], " +
+            ".page.homePage"
+        );
+    }
+
     function findHomeSection() {
         const heading = findHomeHeading();
 
@@ -94,7 +102,7 @@
     }
 
     function isHomePage() {
-        return Boolean(findHomeSection());
+        return Boolean(findHomeContainer());
     }
 
     function clearRetry() {
@@ -723,17 +731,13 @@
     }
 
     function insertHero(hero) {
-        const homeSection = findHomeSection();
+        const container = findHomeContainer();
 
-        if (!homeSection?.parentNode) {
+        if (!container) {
             return false;
         }
 
-        homeSection.parentNode.insertBefore(
-            hero,
-            homeSection
-        );
-
+        container.prepend(hero);
         return true;
     }
 
