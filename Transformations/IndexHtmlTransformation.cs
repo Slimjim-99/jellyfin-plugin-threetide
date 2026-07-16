@@ -53,17 +53,8 @@ public static class IndexHtmlTransformation
             Plugin.ReadEmbeddedText("catalog.css")
         ];
 
-        if (config.EnablePlayerTheme)
-        {
-            styles.Add(
-                Plugin.ReadEmbeddedText("player.css"));
-        }
 
-        if (config.EnableLiveTvTheme)
-        {
-            styles.Add(
-                Plugin.ReadEmbeddedText("livetv.css"));
-        }
+       
 
         string brandingCss =
             Plugin.BrandingService.BuildCss();
@@ -128,8 +119,6 @@ public static class IndexHtmlTransformation
         string searchScript =
             Plugin.ReadEmbeddedText("search.js");
 
-        string playerScript =
-    Plugin.ReadEmbeddedText("player.js");
 
         string runtimeScript =
             Plugin.ReadEmbeddedText("runtime.js");
@@ -176,9 +165,6 @@ window.__THREETIDE_CONFIG__ = {browserConfig};
 {searchScript}
 </script> 
 
-<script id="threetide-player-script">
-{playerScript}
-</script>
 
 <script id="threetide-runtime-script">
 {runtimeScript}

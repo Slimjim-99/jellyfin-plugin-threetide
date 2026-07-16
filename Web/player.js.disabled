@@ -1,0 +1,142 @@
+/* =========================================================
+   3Tide Player – sichere Designbasis
+   Die native Jellyfin-Playerstruktur bleibt unangetastet.
+   ========================================================= */
+
+.videoPlayerContainer,
+.videoPlayerPage,
+.videoPlayer,
+.htmlVideoPlayer {
+    background: #000!important;
+}
+
+/*
+ * Keine Änderungen an:
+ * display
+ * position
+ * inset
+ * width / height
+ * opacity
+ * visibility
+ * transform
+ *
+ * Jellyfin verwaltet diese Werte dynamisch.
+ */
+
+.videoOsd {
+    z - index: 30;
+    pointer - events: none;
+}
+
+.videoOsdTop,
+.videoOsdBottom,
+.osdControls {
+    pointer - events: auto;
+}
+
+.videoOsdTop {
+    background:
+    linear - gradient(
+        180deg,
+        rgba(0, 0, 0, 0.88) 0 %,
+        rgba(0, 0, 0, 0.42) 55 %,
+        transparent 100 %
+        )!important;
+}
+
+.videoOsdBottom {
+    background:
+    linear - gradient(
+        0deg,
+        rgba(0, 0, 0, 0.94) 0 %,
+        rgba(0, 0, 0, 0.62) 55 %,
+        transparent 100 %
+        )!important;
+}
+
+/* Buttons nur gestalten, nicht erzwingen */
+
+.videoOsd button,
+.osdControls button,
+.videoOsd.paper - icon - button - light {
+    color: #fff!important;
+    border - radius: 50 % !important;
+
+    transition:
+        transform 160ms ease,
+        background - color 160ms ease,
+            color 160ms ease!important;
+}
+
+.videoOsd button: hover,
+.osdControls button: hover,
+.videoOsd.paper - icon - button - light:hover {
+    color: #fff!important;
+    background:
+    rgba(255, 255, 255, 0.14)!important;
+    transform: scale(1.08);
+}
+
+/* Fortschrittsleiste */
+
+.videoOsd.mdl - slider - background - lower,
+.videoOsd.playedIndicator,
+.videoOsd.progressContainer.progress {
+    background:
+    var(--threetide - brand - color, #e50914)!important;
+}
+
+.videoOsd input[type = "range"] {
+    accent - color:
+    var(--threetide - brand - color, #e50914);
+}
+
+.videoOsd.mdl - slider:: -webkit - slider - thumb,
+.videoOsd input[type = "range"]:: -webkit - slider - thumb {
+    background:
+    var(--threetide - brand - color, #e50914)!important;
+}
+
+/* Titel und Zeiten */
+
+.videoOsdTitle,
+.osdTitle,
+.nowPlayingBarText {
+    color: #fff!important;
+    font - weight: 700!important;
+
+    text - shadow:
+    0 2px 14px rgba(0, 0, 0, 0.9);
+}
+
+.positionTime,
+.durationText,
+.endsAtText {
+    color:
+    rgba(255, 255, 255, 0.76)!important;
+}
+
+/* Player-Menüs */
+
+.actionSheet,
+.dialog,
+.selectMenu {
+    color: #fff!important;
+
+    border:
+    1px solid rgba(255, 255, 255, 0.1)!important;
+
+    background:
+    rgba(14, 14, 14, 0.97)!important;
+
+    backdrop - filter: blur(18px);
+}
+
+@media(hover: none) and(pointer: coarse) {
+    .videoOsd button,
+    .osdControls button,
+    .videoOsd.paper - icon - button - light {
+        min - width: 46px!important;
+        min - height: 46px!important;
+    }
+}
