@@ -491,11 +491,9 @@
 
         function start() {
             ensureSearchTrigger();
-            ensureLibraryLinks();
 
             const observer = new MutationObserver(() => {
                 ensureSearchTrigger();
-                ensureLibraryLinks();
             });
 
             observer.observe(document.documentElement, {

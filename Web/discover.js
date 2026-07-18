@@ -1229,11 +1229,29 @@
         const defaultContent =
             bindDiscoverEvents(discover);
 
+        document.documentElement.classList.add(
+            "threetide-discover-open"
+        );
+        document.body?.classList.add(
+            "threetide-discover-open"
+        );
+
         activeDialog =
             ui.openModal({
                 title: "Entdecken & Anfragen",
                 contentElement: discover,
                 size: "full",
+                showBackButton: true,
+                backLabel: "Zurück",
+                onBack: close,
+                onClose: () => {
+                    document.documentElement.classList.remove(
+                        "threetide-discover-open"
+                    );
+                    document.body?.classList.remove(
+                        "threetide-discover-open"
+                    );
+                },
                 className:
                     "threetide-discover-modal"
             });
@@ -1253,6 +1271,13 @@
         closeItemDetails();
 
         getUi()?.closeModal?.();
+
+        document.documentElement.classList.remove(
+            "threetide-discover-open"
+        );
+        document.body?.classList.remove(
+            "threetide-discover-open"
+        );
 
         activeDialog = null;
         activeDiscover = null;

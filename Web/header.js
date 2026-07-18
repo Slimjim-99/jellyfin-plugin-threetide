@@ -8,13 +8,39 @@
 
     let observer = null;
     let refreshTimers = [];
+    let logoutInProgress = false;
 
-    function clearRefreshTimers() {
-        refreshTimers.forEach((timer) => window.clearTimeout(timer));
-        refreshTimers = [];
+    function getApiClient() {
+        try {
+            if (typeof ApiClient !== "undefined" && ApiClient) {
+                return ApiClient;
+            }
+        } catch {
+            // ApiClient may not exist yet.
+        }
+
+        return window.ApiClient || null;
+    }
+
+    function getConnectionManager() {
+        return window.ConnectionManager ||
+            window.connectionManager ||
+            window.ApiClient?.connectionManager ||
+            null;
+    }
+
+    function normalizeRoute(route) {
+        const value = String(route || "").trim();
+        if (!value) {
+            return HOME_ROUTE;
+        }
+        return value.startsWith("#") ? value.slice(1) : value;
     }
 
     function refreshThreeTideModules() {
+        refreshTimers.forEach((timer) => window.clearTimeout(timer));
+        refreshTimers = [];
+
         const refresh = () => {
             try {
                 window.ThreeTideHome?.refresh?.();
@@ -23,32 +49,13 @@
                 window.ThreeTideHero?.sync?.();
                 window.ThreeTideCatalog?.refresh?.();
             } catch (error) {
-                console.warn(
-                    "[3Tide] Modul-Aktualisierung nach Navigation fehlgeschlagen.",
-                    error
-                );
+                console.warn("[3Tide] Aktualisierung nach Navigation fehlgeschlagen.", error);
             }
         };
 
-        clearRefreshTimers();
-
         [80, 280, 700].forEach((delay) => {
-            refreshTimers.push(
-                window.setTimeout(refresh, delay)
-            );
+            refreshTimers.push(window.setTimeout(refresh, delay));
         });
-    }
-
-    function normalizeRoute(route) {
-        const value = String(route || "").trim();
-
-        if (!value) {
-            return HOME_ROUTE;
-        }
-
-        return value.startsWith("#")
-            ? value.slice(1)
-            : value;
     }
 
     function go(route) {
@@ -57,29 +64,79 @@
 
         closeDrawer();
 
-        /*
-         * Jellyfin ist eine SPA. Das Setzen des Hashes übernimmt die normale
-         * Navigation. Wenn die Zielroute bereits aktiv ist, lösen wir das
-         * Ereignis selbst aus, damit Hero und Startseite nicht erst nach einem
-         * zweiten Klick aufgebaut werden.
-         */
         if (window.location.hash !== targetHash) {
             window.location.hash = normalized;
         } else {
-            window.dispatchEvent(
-                new HashChangeEvent("hashchange", {
-                    oldURL: window.location.href,
-                    newURL: window.location.href
-                })
-            );
+            window.dispatchEvent(new HashChangeEvent("hashchange"));
         }
 
         refreshThreeTideModules();
     }
 
+    function isLoginPage() {
+        const hash = String(window.location.hash || "").toLowerCase();
+        return hash.includes("/login") ||
+            hash.includes("session/login") ||
+            Boolean(document.querySelector("#loginPage, .loginPage, [data-role='page'][class*='login']"));
+    }
+
+    function isPlayerActive() {
+        const hash = String(window.location.hash || "").toLowerCase();
+        const osd = document.querySelector("#videoOsdPage");
+        const video = document.querySelector(
+            "video:not(.threetide-hero-preview-video)"
+        );
+
+        const osdVisible = Boolean(
+            osd &&
+            !osd.classList.contains("hide") &&
+            osd.getClientRects().length > 0
+        );
+
+        const videoPlaying = Boolean(
+            video &&
+            video.getClientRects().length > 0 &&
+            !video.paused &&
+            video.readyState >= 2
+        );
+
+        return (
+            hash.includes("/playback/video") ||
+            osdVisible ||
+            videoPlaying
+        );
+    }
+
+    function updatePageState() {
+        const loginActive = isLoginPage();
+        const playerActive = isPlayerActive();
+
+        document.documentElement.classList.toggle("threetide-login-active", loginActive);
+        document.body?.classList.toggle("threetide-login-active", loginActive);
+        document.documentElement.classList.toggle("threetide-player-active", playerActive);
+        document.body?.classList.toggle("threetide-player-active", playerActive);
+
+        const header = document.getElementById(HEADER_ID);
+        const drawer = document.getElementById(DRAWER_ID);
+
+        header?.classList.toggle("threetide-hidden-on-login", loginActive);
+        drawer?.classList.toggle("threetide-hidden-on-login", loginActive);
+        header?.classList.toggle("threetide-hidden-for-player", playerActive);
+        drawer?.classList.toggle("threetide-hidden-for-player", playerActive);
+
+        if (loginActive || playerActive) {
+            closeDrawer();
+        }
+    }
+
+    function hideNativeHeader() {
+        document.querySelectorAll(".skinHeader").forEach((header) => {
+            header.classList.add("threetide-native-header-hidden");
+        });
+    }
+
     function openDiscover() {
         const discover = root.Discover;
-
         if (discover && typeof discover.open === "function") {
             discover.init?.();
             discover.open();
@@ -90,35 +147,46 @@
         console.error("[3Tide] Discover-Modul ist nicht verfügbar.");
     }
 
-    function logout() {
-        try {
-            const client =
-                window.ApiClient ||
-                (
-                    typeof ApiClient !== "undefined"
-                        ? ApiClient
-                        : null
-                );
+    function openSettings() {
+        closeDrawer();
+        go("/mypreferencesmenu.html");
+    }
 
-            client?.logout?.();
+    async function logout() {
+        if (logoutInProgress) {
+            return;
+        }
+
+        logoutInProgress = true;
+        closeDrawer();
+
+        try {
+            const manager = getConnectionManager();
+            const client = getApiClient();
+            let result = null;
+
+            if (manager && typeof manager.logout === "function") {
+                result = manager.logout();
+            } else if (client && typeof client.logout === "function") {
+                result = client.logout();
+            } else {
+                throw new Error("Keine Jellyfin-Logout-Funktion gefunden.");
+            }
+
+            if (result && typeof result.then === "function") {
+                await result;
+            }
+
+            window.setTimeout(() => window.location.reload(), 150);
         } catch (error) {
+            logoutInProgress = false;
             console.error("[3Tide] Abmelden fehlgeschlagen.", error);
         }
     }
 
     function isAdmin() {
         try {
-            const client =
-                window.ApiClient ||
-                (
-                    typeof ApiClient !== "undefined"
-                        ? ApiClient
-                        : null
-                );
-
-            return Boolean(
-                client?.getCurrentUser?.()?.Policy?.IsAdministrator
-            );
+            return Boolean(getApiClient()?.getCurrentUser?.()?.Policy?.IsAdministrator);
         } catch {
             return false;
         }
@@ -126,43 +194,27 @@
 
     function createNavButton(label, route, icon = "") {
         const button = document.createElement("button");
-
         button.type = "button";
         button.className = "threetide-nav-button";
         button.dataset.route = route;
-
-        button.innerHTML = `
-            ${icon ? `<span class="material-icons">${icon}</span>` : ""}
-            <span>${label}</span>
-        `;
-
+        button.innerHTML = `${icon ? `<span class="material-icons" aria-hidden="true">${icon}</span>` : ""}<span>${label}</span>`;
         button.addEventListener("click", () => go(route));
-
         return button;
     }
 
     function createHeader() {
         const header = document.createElement("header");
-
         header.id = HEADER_ID;
         header.className = "threetide-header";
 
         const burger = document.createElement("button");
-
         burger.type = "button";
         burger.className = "threetide-burger";
         burger.setAttribute("aria-label", "Menü öffnen");
-
-        burger.innerHTML = `
-            <span></span>
-            <span></span>
-            <span></span>
-        `;
-
+        burger.innerHTML = "<span></span><span></span><span></span>";
         burger.addEventListener("click", toggleDrawer);
 
         const logo = document.createElement("button");
-
         logo.type = "button";
         logo.className = "threetide-header-logo";
         logo.setAttribute("aria-label", "3Tide Startseite");
@@ -170,10 +222,8 @@
         logo.addEventListener("click", () => go(HOME_ROUTE));
 
         const nav = document.createElement("nav");
-
         nav.className = "threetide-header-nav";
         nav.setAttribute("aria-label", "3Tide Navigation");
-
         nav.append(
             createNavButton("Startseite", HOME_ROUTE),
             createNavButton("Filme", "/movies.html"),
@@ -182,179 +232,102 @@
         );
 
         const request = document.createElement("button");
-
         request.type = "button";
         request.className = "threetide-request-button";
-
-        request.innerHTML = `
-            <span class="material-icons">add_circle</span>
-            <span>Anfragen</span>
-        `;
-
+        request.innerHTML = '<span class="material-icons" aria-hidden="true">add_circle</span><span>Anfragen</span>';
         request.addEventListener("click", openDiscover);
 
-        header.append(
-            burger,
-            logo,
-            nav,
-            request
-        );
-
+        header.append(burger, logo, nav, request);
         return header;
+    }
+
+    function createDrawerButton(icon, label, className = "") {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = className;
+        button.innerHTML = `<span class="material-icons" aria-hidden="true">${icon}</span><span>${label}</span>`;
+        return button;
     }
 
     function createDrawer() {
         const backdrop = document.createElement("div");
-
         backdrop.id = DRAWER_ID;
         backdrop.className = "threetide-drawer-backdrop";
         backdrop.hidden = true;
 
         const drawer = document.createElement("aside");
-
         drawer.className = "threetide-drawer";
-
         drawer.innerHTML = `
             <div class="threetide-drawer-header">
                 <strong>3Tide</strong>
-
-                <button type="button"
-                        class="threetide-drawer-close"
-                        aria-label="Menü schließen">
-                    <span class="material-icons">close</span>
+                <button type="button" class="threetide-drawer-close" aria-label="Menü schließen">
+                    <span class="material-icons" aria-hidden="true">close</span>
                 </button>
-            </div>
-        `;
+            </div>`;
 
-        drawer
-            .querySelector(".threetide-drawer-close")
-            ?.addEventListener("click", closeDrawer);
+        drawer.querySelector(".threetide-drawer-close")?.addEventListener("click", closeDrawer);
 
         const nav = document.createElement("nav");
-
         nav.className = "threetide-drawer-nav";
-
         nav.append(
             createNavButton("Startseite", HOME_ROUTE, "home"),
             createNavButton("Filme", "/movies.html", "movie"),
             createNavButton("Serien", "/tv.html", "tv"),
-            createNavButton(
-                "Live TV",
-                "/livetv?collectionType=livetv",
-                "live_tv"
-            )
+            createNavButton("Live TV", "/livetv?collectionType=livetv", "live_tv")
         );
 
-        const request = document.createElement("button");
-
-        request.type = "button";
-        request.className = "threetide-drawer-request";
-
-        request.innerHTML = `
-            <span class="material-icons">search</span>
-            <span>Anfragen</span>
-        `;
-
+        const request = createDrawerButton("search", "Anfragen", "threetide-drawer-request");
         request.addEventListener("click", openDiscover);
 
         const footer = document.createElement("div");
-
         footer.className = "threetide-drawer-footer";
 
         if (isAdmin()) {
-            const dashboard = document.createElement("button");
-
-            dashboard.type = "button";
-            dashboard.innerHTML = `
-                <span class="material-icons">admin_panel_settings</span>
-                <span>Dashboard</span>
-            `;
-
-            dashboard.addEventListener(
-                "click",
-                () => go("/dashboard.html")
-            );
-
+            const dashboard = createDrawerButton("admin_panel_settings", "Dashboard", "threetide-dashboard-button");
+            dashboard.addEventListener("click", () => go("/dashboard.html"));
             footer.appendChild(dashboard);
         }
 
-        const settings = document.createElement("button");
+        const settings = createDrawerButton("settings", "Einstellungen", "threetide-settings-button");
+        settings.addEventListener("click", openSettings);
 
-        settings.type = "button";
-        settings.innerHTML = `
-            <span class="material-icons">settings</span>
-            <span>Einstellungen</span>
-        `;
-
-        settings.addEventListener(
-            "click",
-            () => go("/settings")
-        );
-
-        const signOut = document.createElement("button");
-
-        signOut.type = "button";
-        signOut.innerHTML = `
-            <span class="material-icons">logout</span>
-            <span>Abmelden</span>
-        `;
-
+        const signOut = createDrawerButton("logout", "Abmelden", "threetide-signout-button");
         signOut.addEventListener("click", logout);
 
-        footer.append(
-            settings,
-            signOut
-        );
-
-        drawer.append(
-            nav,
-            request,
-            footer
-        );
-
+        footer.append(settings, signOut);
+        drawer.append(nav, request, footer);
         backdrop.appendChild(drawer);
 
-        backdrop.addEventListener(
-            "click",
-            (event) => {
-                if (event.target === backdrop) {
-                    closeDrawer();
-                }
+        backdrop.addEventListener("click", (event) => {
+            if (event.target === backdrop) {
+                closeDrawer();
             }
-        );
+        });
 
         return backdrop;
     }
 
     function openDrawer() {
         const drawer = document.getElementById(DRAWER_ID);
-
         if (!drawer) {
             return;
         }
 
         drawer.hidden = false;
-
-        requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
             drawer.classList.add("is-open");
-            document.documentElement.classList.add(
-                "threetide-drawer-open"
-            );
+            document.documentElement.classList.add("threetide-drawer-open");
         });
     }
 
     function closeDrawer() {
         const drawer = document.getElementById(DRAWER_ID);
-
         if (!drawer) {
             return;
         }
 
         drawer.classList.remove("is-open");
-
-        document.documentElement.classList.remove(
-            "threetide-drawer-open"
-        );
+        document.documentElement.classList.remove("threetide-drawer-open");
 
         window.setTimeout(() => {
             if (!drawer.classList.contains("is-open")) {
@@ -365,7 +338,6 @@
 
     function toggleDrawer() {
         const drawer = document.getElementById(DRAWER_ID);
-
         if (drawer?.classList.contains("is-open")) {
             closeDrawer();
         } else {
@@ -373,78 +345,37 @@
         }
     }
 
-    function hideNativeHeader() {
-        document
-            .querySelectorAll(".skinHeader")
-            .forEach((header) => {
-                header.classList.add(
-                    "threetide-native-header-hidden"
-                );
-            });
-    }
-
     function updateActive() {
-        const current =
-            String(window.location.hash || "")
-                .toLowerCase();
+        const current = String(window.location.hash || "").toLowerCase();
 
-        document
-            .querySelectorAll(
-                ".threetide-nav-button[data-route]"
-            )
-            .forEach((button) => {
-                const route =
-                    String(button.dataset.route || "")
-                        .toLowerCase();
+        document.querySelectorAll(".threetide-nav-button[data-route]").forEach((button) => {
+            const route = String(button.dataset.route || "").toLowerCase();
+            const active = current === `#${route}` ||
+                (route === HOME_ROUTE && (current === "" || current.includes("home"))) ||
+                (route === "/movies.html" && current.includes("movies")) ||
+                (route === "/tv.html" && current.includes("/tv")) ||
+                (route.includes("livetv") && current.includes("livetv"));
 
-                const active =
-                    current === `#${route}` ||
-                    (
-                        route === HOME_ROUTE &&
-                        (
-                            current === "" ||
-                            current.includes("home")
-                        )
-                    ) ||
-                    (
-                        route === "/movies.html" &&
-                        current.includes("movies")
-                    ) ||
-                    (
-                        route === "/tv.html" &&
-                        current.includes("/tv")
-                    ) ||
-                    (
-                        route.includes("livetv") &&
-                        current.includes("livetv")
-                    );
-
-                button.classList.toggle(
-                    "is-active",
-                    active
-                );
-            });
+            button.classList.toggle("is-active", active);
+        });
     }
 
     function mount() {
-        hideNativeHeader();
-
         if (!document.body) {
             return;
         }
 
+        hideNativeHeader();
+
         if (!document.getElementById(HEADER_ID)) {
-            document.body.appendChild(
-                createHeader()
-            );
+            document.body.appendChild(createHeader());
         }
 
         if (!document.getElementById(DRAWER_ID)) {
-            document.body.appendChild(
-                createDrawer()
-            );
+            document.body.appendChild(createDrawer());
         }
 
+        updatePageState();
         updateActive();
     }
 
@@ -455,31 +386,19 @@
         }
 
         observer = new MutationObserver(mount);
+        observer.observe(document.documentElement, { childList: true, subtree: true });
 
-        observer.observe(
-            document.documentElement,
-            {
-                childList: true,
-                subtree: true
-            }
-        );
+        window.addEventListener("hashchange", () => {
+            updatePageState();
+            updateActive();
+            refreshThreeTideModules();
+        });
 
-        window.addEventListener(
-            "hashchange",
-            () => {
-                updateActive();
-                refreshThreeTideModules();
+        window.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                closeDrawer();
             }
-        );
-
-        window.addEventListener(
-            "keydown",
-            (event) => {
-                if (event.key === "Escape") {
-                    closeDrawer();
-                }
-            }
-        );
+        });
 
         mount();
     }
@@ -489,7 +408,9 @@
         go,
         openDrawer,
         closeDrawer,
-        openDiscover
+        openDiscover,
+        openSettings,
+        logout
     };
 
     start();

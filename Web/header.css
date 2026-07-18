@@ -10,6 +10,16 @@
     max-height: 74px !important;
 }
 
+/* Waehrend Video-Wiedergabe: eigenen Header/Drawer komplett
+   ausblenden, damit die native Jellyfin-OSD (Play/Pause,
+   Zeitleiste, Zurueck-Button etc.) weder ueberdeckt noch die
+   Klicks vom fixierten 3Tide-Header abgefangen werden. */
+.threetide-header.threetide-hidden-for-player,
+.threetide-drawer-backdrop.threetide-hidden-for-player {
+    display: none !important;
+    pointer-events: none !important;
+}
+
 .threetide-header,
 .threetide-header *,
 .threetide-drawer-backdrop,
@@ -21,103 +31,59 @@
     position: fixed;
     inset: 0 0 auto 0;
     z-index: 9998;
-
     display: flex;
     align-items: center;
     gap: 1.1rem;
-
     height: 74px;
     padding: 0 1.35rem;
-
-    border-bottom:
-        1px solid
-        rgba(255, 255, 255, 0.05);
-
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     color: #ffffff;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(3, 3, 3, 0.98),
-            rgba(7, 7, 7, 0.93)
-        );
-
+    background: linear-gradient( 180deg, rgba(3, 3, 3, 0.98), rgba(7, 7, 7, 0.93) );
     backdrop-filter: blur(18px);
-
-    box-shadow:
-        0 8px 30px
-        rgba(0, 0, 0, 0.25);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }
 
 .threetide-burger {
     display: flex;
     flex-direction: column;
     justify-content: center;
-
     gap: 5px;
-
     width: 44px;
     height: 44px;
-
     padding: 0 10px;
-
-    border:
-        1px solid
-        transparent;
-
+    border: 1px solid transparent;
     border-radius: 50%;
-
     background: transparent;
-
     cursor: pointer;
 }
 
-.threetide-burger span {
-    display: block;
+    .threetide-burger span {
+        display: block;
+        width: 100%;
+        height: 2px;
+        border-radius: 99px;
+        background: #ffffff;
+        transition: background-color 160ms ease, transform 160ms ease;
+    }
 
-    width: 100%;
-    height: 2px;
+    .threetide-burger:hover {
+        border-color: rgba(229, 9, 20, 0.5);
+        background: rgba(229, 9, 20, 0.12);
+    }
 
-    border-radius: 99px;
-
-    background: #ffffff;
-
-    transition:
-        background-color 160ms ease,
-        transform 160ms ease;
-}
-
-.threetide-burger:hover {
-    border-color:
-        rgba(229, 9, 20, 0.5);
-
-    background:
-        rgba(229, 9, 20, 0.12);
-}
-
-.threetide-burger:hover span {
-    background: #ff2635;
-}
+        .threetide-burger:hover span {
+            background: #ff2635;
+        }
 
 .threetide-header-logo {
     min-width: 145px;
-
     padding: 0;
-
     border: 0;
-
-    color:
-        var(
-            --threetide-brand-color,
-            #e50914
-        );
-
+    color: var( --threetide-brand-color, #e50914 );
     background: transparent;
-
     font-size: 2rem;
     font-weight: 900;
     letter-spacing: -0.07em;
-
     cursor: pointer;
 }
 
@@ -125,121 +91,70 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
     flex: 1 1 auto;
-
-    gap:
-        clamp(
-            0.8rem,
-            1.8vw,
-            2rem
-        );
+    gap: clamp( 0.8rem, 1.8vw, 2rem );
 }
 
 .threetide-nav-button {
     position: relative;
-
     display: inline-flex;
     align-items: center;
-
     gap: 0.65rem;
-
-    padding:
-        0.65rem
-        0;
-
+    padding: 0.65rem 0;
     border: 0;
-
-    color:
-        rgba(255, 255, 255, 0.72);
-
+    color: rgba(255, 255, 255, 0.72);
     background: transparent;
-
     font: inherit;
     font-size: 0.94rem;
     font-weight: 560;
-
     cursor: pointer;
 }
 
-.threetide-nav-button::after {
-    content: "";
+    .threetide-nav-button::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: 0.2rem;
+        left: 0;
+        height: 2px;
+        opacity: 0;
+        border-radius: 99px;
+        background: var( --threetide-brand-color, #e50914 );
+        transform: scaleX(0.45);
+        transition: opacity 160ms ease, transform 160ms ease;
+    }
 
-    position: absolute;
+    .threetide-nav-button:hover,
+    .threetide-nav-button.is-active {
+        color: #ffffff;
+    }
 
-    right: 0;
-    bottom: 0.2rem;
-    left: 0;
-
-    height: 2px;
-
-    opacity: 0;
-
-    border-radius: 99px;
-
-    background:
-        var(
-            --threetide-brand-color,
-            #e50914
-        );
-
-    transform: scaleX(0.45);
-
-    transition:
-        opacity 160ms ease,
-        transform 160ms ease;
-}
-
-.threetide-nav-button:hover,
-.threetide-nav-button.is-active {
-    color: #ffffff;
-}
-
-.threetide-nav-button.is-active::after {
-    opacity: 1;
-    transform: scaleX(1);
-}
+        .threetide-nav-button.is-active::after {
+            opacity: 1;
+            transform: scaleX(1);
+        }
 
 .threetide-request-button {
     display: inline-flex;
     align-items: center;
-
     gap: 0.5rem;
-
     min-height: 40px;
-
-    padding:
-        0
-        1rem;
-
+    padding: 0 1rem;
     border: 0;
-
     border-radius: 7px;
-
     color: #ffffff;
-
-    background:
-        linear-gradient(
-            135deg,
-            #f31422,
-            #b80812
-        );
-
+    background: linear-gradient( 135deg, #f31422, #b80812 );
     font: inherit;
     font-size: 0.9rem;
     font-weight: 750;
-
     cursor: pointer;
-
-    box-shadow:
-        0 8px 22px
-        rgba(229, 9, 20, 0.24);
+    box-shadow: 0 8px 22px rgba(229, 9, 20, 0.24);
 }
 
-.threetide-request-button:hover {
-    filter: brightness(1.12);
-    transform: translateY(-1px);
-}
+    .threetide-request-button:hover {
+        filter: brightness(1.12);
+        transform: translateY(-1px);
+    }
 
 /* Drawer */
 
@@ -247,63 +162,32 @@
     position: fixed;
     inset: 0;
     z-index: 10000;
-
     opacity: 0;
-
-    background:
-        rgba(0, 0, 0, 0.68);
-
+    background: rgba(0, 0, 0, 0.68);
     backdrop-filter: blur(5px);
-
-    transition:
-        opacity 220ms ease;
+    transition: opacity 220ms ease;
 }
 
-.threetide-drawer-backdrop[hidden] {
-    display: none !important;
-}
+    .threetide-drawer-backdrop[hidden] {
+        display: none !important;
+    }
 
-.threetide-drawer-backdrop.is-open {
-    opacity: 1;
-}
+    .threetide-drawer-backdrop.is-open {
+        opacity: 1;
+    }
 
 .threetide-drawer {
     display: flex;
     flex-direction: column;
-
-    width:
-        min(
-            88vw,
-            350px
-        );
-
+    width: min( 88vw, 350px );
     height: 100%;
-
-    padding:
-        1.1rem;
-
-    border-right:
-        1px solid
-        rgba(255, 255, 255, 0.08);
-
+    padding: 1.1rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
     color: #ffffff;
-
-    background:
-        linear-gradient(
-            180deg,
-            #0d0d0d,
-            #050505
-        );
-
-    box-shadow:
-        20px 0 55px
-        rgba(0, 0, 0, 0.55);
-
-    transform:
-        translateX(-102%);
-
-    transition:
-        transform 220ms ease;
+    background: linear-gradient( 180deg, #0d0d0d, #050505 );
+    box-shadow: 20px 0 55px rgba(0, 0, 0, 0.55);
+    transform: translateX(-102%);
+    transition: transform 220ms ease;
 }
 
 .threetide-drawer-backdrop.is-open
@@ -315,145 +199,89 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    padding:
-        0.35rem
-        0.25rem
-        1.25rem;
-
-    border-bottom:
-        1px solid
-        rgba(255, 255, 255, 0.08);
+    padding: 0.35rem 0.25rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.threetide-drawer-header strong {
-    color:
-        var(
-            --threetide-brand-color,
-            #e50914
-        );
-
-    font-size: 2rem;
-    font-weight: 900;
-    letter-spacing: -0.07em;
-}
+    .threetide-drawer-header strong {
+        color: var( --threetide-brand-color, #e50914 );
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -0.07em;
+    }
 
 .threetide-drawer-close {
     display: grid;
-
     width: 42px;
     height: 42px;
-
     place-items: center;
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.12);
-
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 50%;
-
     color: #ffffff;
-
-    background:
-        rgba(255, 255, 255, 0.05);
-
+    background: rgba(255, 255, 255, 0.05);
     cursor: pointer;
 }
 
 .threetide-drawer-nav {
     display: flex;
     flex-direction: column;
-
     gap: 0.35rem;
-
-    padding:
-        1.1rem
-        0;
+    padding: 1.1rem 0;
 }
 
-.threetide-drawer-nav
-.threetide-nav-button,
-.threetide-drawer-footer button,
-.threetide-drawer-request {
-    width: 100%;
+    .threetide-drawer-nav
+    .threetide-nav-button,
+    .threetide-drawer-footer button,
+    .threetide-drawer-request {
+        width: 100%;
+        justify-content: flex-start;
+        min-height: 48px;
+        padding: 0 0.9rem;
+        border: 0;
+        border-radius: 8px;
+        color: rgba(255, 255, 255, 0.84);
+        background: transparent;
+        font: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
 
-    justify-content: flex-start;
+        .threetide-drawer-nav
+        .threetide-nav-button:hover,
+        .threetide-drawer-footer button:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
 
-    min-height: 48px;
-
-    padding:
-        0
-        0.9rem;
-
-    border: 0;
-
-    border-radius: 8px;
-
-    color:
-        rgba(255, 255, 255, 0.84);
-
-    background: transparent;
-
-    font: inherit;
-    font-size: 0.95rem;
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.threetide-drawer-nav
-.threetide-nav-button:hover,
-.threetide-drawer-footer button:hover {
-    color: #ffffff;
-
-    background:
-        rgba(255, 255, 255, 0.08);
-}
-
-.threetide-drawer-nav
-.threetide-nav-button::after {
-    display: none;
-}
+        .threetide-drawer-nav
+        .threetide-nav-button::after {
+            display: none;
+        }
 
 .threetide-drawer-request {
     display: flex;
     align-items: center;
-
     gap: 0.65rem;
-
     margin-bottom: 1rem;
-
     color: #ffffff;
-
-    background:
-        linear-gradient(
-            135deg,
-            #f31422,
-            #b80812
-        );
+    background: linear-gradient( 135deg, #f31422, #b80812 );
 }
 
 .threetide-drawer-footer {
     display: flex;
     flex-direction: column;
-
     gap: 0.25rem;
-
     margin-top: auto;
-
     padding-top: 1rem;
-
-    border-top:
-        1px solid
-        rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.threetide-drawer-footer button {
-    display: flex;
-    align-items: center;
-
-    gap: 0.65rem;
-}
+    .threetide-drawer-footer button {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+    }
 
 html.threetide-drawer-open,
 html.threetide-drawer-open body {
@@ -478,9 +306,7 @@ html.threetide-drawer-open body {
 
 @media (max-width: 520px) {
     .threetide-header {
-        padding:
-            0
-            0.75rem;
+        padding: 0 0.75rem;
     }
 
     .threetide-header-logo {

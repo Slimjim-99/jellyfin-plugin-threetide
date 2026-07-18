@@ -473,6 +473,19 @@
             "threetide-modal-closing"
         );
 
+        if (
+            typeof backdrop._threetideOnClose === "function"
+        ) {
+            try {
+                backdrop._threetideOnClose();
+            } catch (error) {
+                console.warn(
+                    "[3Tide UI] Modal-onClose fehlgeschlagen.",
+                    error
+                );
+            }
+        }
+
         document.documentElement
             .classList
             .remove(
@@ -495,6 +508,10 @@
             size = "large",
             closeOnBackdrop = true,
             showCloseButton = true,
+            showBackButton = false,
+            backLabel = "Zurück",
+            onBack = null,
+            onClose = null,
             className = ""
         } = options;
 
@@ -508,6 +525,8 @@
 
         backdrop.className =
             "threetide-modal-backdrop";
+
+        backdrop._threetideOnClose = onClose;
 
         const modal =
             document.createElement("section");
@@ -550,9 +569,48 @@
         titleElement.textContent =
             title;
 
-        header.appendChild(
-            titleElement
-        );
+        const headerStart =
+            document.createElement("div");
+
+        headerStart.className =
+            "threetide-modal-header-start";
+
+        if (showBackButton) {
+            const backButton =
+                document.createElement("button");
+
+            backButton.type = "button";
+            backButton.className =
+                "threetide-modal-back";
+            backButton.setAttribute(
+                "aria-label",
+                backLabel
+            );
+            backButton.appendChild(
+                createIcon("arrow_back")
+            );
+
+            const backText =
+                document.createElement("span");
+            backText.textContent = backLabel;
+            backButton.appendChild(backText);
+
+            backButton.addEventListener(
+                "click",
+                () => {
+                    if (typeof onBack === "function") {
+                        onBack();
+                    } else {
+                        closeModal();
+                    }
+                }
+            );
+
+            headerStart.appendChild(backButton);
+        }
+
+        headerStart.appendChild(titleElement);
+        header.appendChild(headerStart);
 
         if (showCloseButton) {
             const closeButton =

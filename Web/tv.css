@@ -1,0 +1,131 @@
+/* =========================================================
+   3Tide TV Layer (tv.css)
+   Alle Regeln haengen an body.threetide-tv - auf Desktop
+   und Mobile komplett inaktiv, kann daher immer mitgeliefert
+   werden. KEIN :has(), :focus-visible oder modernes CSS -
+   alte Tizen/webOS-Chromiums muessen das rendern.
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   1) 10-Foot-Grundlagen
+   --------------------------------------------------------- */
+body.threetide-tv {
+    font-size: 106%;
+    overflow-x: hidden;
+    cursor: none;
+}
+
+body.threetide-tv ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+/* Safe-Area: an TV-Raendern nichts abschneiden */
+body.threetide-tv .threetide-home-content,
+body.threetide-tv .threetide-content-row {
+    padding-left: 2.5vw;
+    padding-right: 2.5vw;
+    box-sizing: border-box;
+}
+
+/* ---------------------------------------------------------
+   2) Fokus-Zustaende: :focus ist am TV das neue :hover
+   --------------------------------------------------------- */
+
+/* 3Tide-Karten (home.js) */
+body.threetide-tv .threetide-poster-card:focus,
+body.threetide-tv .threetide-landscape-card:focus {
+    outline: none;
+    -webkit-transform: scale(1.08);
+    transform: scale(1.08);
+    -webkit-transition: -webkit-transform 0.15s ease-out;
+    transition: transform 0.15s ease-out;
+    box-shadow:
+        0 0 0 4px #ffffff,
+        0 8px 24px rgba(0, 0, 0, 0.6);
+    border-radius: 6px;
+    z-index: 5;
+    position: relative;
+}
+
+/* Hero-Buttons */
+body.threetide-tv .threetide-hero-play:focus,
+body.threetide-tv .threetide-hero-details:focus,
+body.threetide-tv .threetide-hero-nav:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #ffffff;
+    background: rgba(224, 36, 46, 0.9);
+    color: #ffffff;
+}
+
+/* Header-Navigation */
+body.threetide-tv .threetide-nav-button:focus,
+body.threetide-tv .threetide-request-button:focus,
+body.threetide-tv .threetide-burger:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #ffffff;
+    background: rgba(224, 36, 46, 0.85);
+    color: #ffffff;
+    border-radius: 4px;
+}
+
+/* Jellyfin-Standardelemente (Einstellungen etc.) */
+body.threetide-tv .emby-button:focus,
+body.threetide-tv button:focus,
+body.threetide-tv .paper-icon-button-light:focus,
+body.threetide-tv a:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #ffffff;
+    border-radius: 4px;
+}
+
+body.threetide-tv .card:focus .cardBox {
+    -webkit-transform: scale(1.08);
+    transform: scale(1.08);
+    box-shadow:
+        0 0 0 4px #ffffff,
+        0 8px 24px rgba(0, 0, 0, 0.6);
+    border-radius: 6px;
+}
+
+body.threetide-tv .listItem:focus {
+    background: rgba(224, 36, 46, 0.35);
+    box-shadow: inset 4px 0 0 #e0242e;
+}
+
+/* ---------------------------------------------------------
+   3) Hover-Features am TV neutralisieren
+   --------------------------------------------------------- */
+
+/* Hero-Preview-Trailer: window.TIDE_TV verhindert schon den
+   Start in Hero.js - das hier ist nur das Sicherheitsnetz. */
+body.threetide-tv .threetide-hero-preview-video {
+    display: none !important;
+}
+
+/* Hover-Overlays der Karten (mouseenter kommt am TV nie) */
+body.threetide-tv .threetide-poster-overlay,
+body.threetide-tv .threetide-landscape-overlay,
+body.threetide-tv .cardOverlayContainer {
+    display: none !important;
+}
+
+/* ---------------------------------------------------------
+   4) Player-OSD am TV: grosse Controls
+   (player.css macht die Basis, hier nur TV-Verstaerkung)
+   --------------------------------------------------------- */
+body.threetide-tv .videoOsdBottom .paper-icon-button-light,
+body.threetide-tv .videoOsdBottom button {
+    font-size: 140%;
+    padding: 0.55em;
+    margin: 0 0.3em;
+}
+
+body.threetide-tv .osdTitle {
+    font-size: 130%;
+}
+
+body.threetide-tv .videoOsdBottom .emby-slider {
+    height: 9px !important;
+}

@@ -99,7 +99,16 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     }
 
     /// <summary>
-    /// Reads an embedded frontend asset.
+    /// Cache for embedded assets. They are immutable for the lifetime
+    /// of the assembly, so reading them once per process is enough.
+    /// Avoids repeated reflection + stream reads on every
+    /// index.html transformation request.
+    /// </summary>
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> AssetCache =
+        new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Reads an embedded frontend asset (cached).
     /// </summary>
     /// <param name="fileName">Asset file name.</param>
     /// <returns>Asset text.</returns>
@@ -107,6 +116,13 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
 
+        return AssetCache.GetOrAdd(
+            fileName,
+            static key => ReadEmbeddedTextUncached(key));
+    }
+
+    private static string ReadEmbeddedTextUncached(string fileName)
+    {
         Assembly assembly =
             typeof(Plugin).Assembly;
 

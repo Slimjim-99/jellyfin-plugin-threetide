@@ -70,7 +70,11 @@
                 continue;
             }
 
-            if (HOME_TITLES.includes(normalizeText(element.textContent))) {
+            if (
+                HOME_TITLES.includes(
+                    normalizeText(element.textContent)
+                )
+            ) {
                 return element;
             }
         }
@@ -83,21 +87,6 @@
             ".homeSectionsContainer, .homeSections, #homeTab, " +
             ".homePage, .view-home, [data-type='home'], " +
             ".page.homePage"
-        );
-    }
-
-    function findHomeSection() {
-        const heading = findHomeHeading();
-
-        if (!heading) {
-            return null;
-        }
-
-        return (
-            heading.closest(".verticalSection") ||
-            heading.closest("section") ||
-            heading.parentElement?.parentElement ||
-            heading.parentElement
         );
     }
 
@@ -127,11 +116,9 @@
         }
 
         autoRotateTimer = window.setInterval(() => {
-            if (document.hidden) {
-                return;
+            if (!document.hidden) {
+                showNext();
             }
-
-            showNext();
         }, AUTO_ROTATE_MS);
     }
 
@@ -182,58 +169,145 @@
         );
     }
 
-    async function fetchLocalTrailerUrl(item) {
+    function shouldAutoplayPreview() {
+        const reducedMotion =
+            window.matchMedia?.(
+                "(prefers-reduced-motion: reduce)"
+            )?.matches;
+
+        const saveData =
+            navigator.connection?.saveData === true;
+
+        return !reducedMotion && !saveData;
+    }
+
+    async function requestJson(url) {
+        const client = getApiClient();
+
+        if (!client) {
+            return null;
+        }
+
+        if (typeof client.ajax === "function") {
+            return client.ajax({
+                type: "GET",
+                url,
+                dataType: "json"
+            });
+        }
+
+        const response = await fetch(url, {
+            credentials: "same-origin"
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        return response.json();
+    }
+
+    function previewScore(item) {
+        const text = String(
+            `${item?.Name || ""} ${item?.Path || ""}`
+        ).toLowerCase();
+
+        let score = 0;
+
+        if (/3tide|hero/.test(text)) score += 80;
+        if (/preview|vorschau|teaser/.test(text)) score += 70;
+        if (/trailer/.test(text)) score += 60;
+        if (/clip|sample|short/.test(text)) score += 40;
+
+        const ticks = Number(item?.RunTimeTicks || 0);
+        const seconds = ticks / 10000000;
+
+        if (seconds > 0 && seconds <= 45) score += 35;
+        else if (seconds <= 90) score += 25;
+        else if (seconds <= 180) score += 10;
+
+        return score;
+    }
+
+    function choosePreview(items) {
+        return (Array.isArray(items) ? items : [])
+            .filter((entry) => entry?.Id)
+            .sort((a, b) => previewScore(b) - previewScore(a))[0] || null;
+    }
+
+    async function fetchPreviewUrl(item) {
         const client = getApiClient();
 
         if (!client || !item?.Id) {
             return "";
         }
 
-        if (item._threetideTrailerUrl !== undefined) {
-            return item._threetideTrailerUrl;
+        if (item._threetidePreviewUrl !== undefined) {
+            return item._threetidePreviewUrl;
         }
 
-        try {
-            const url = client.getUrl(
-                `Items/${item.Id}/LocalTrailers`
-            );
+        const endpoints = [
+            `Items/${item.Id}/LocalTrailers`,
+            `Items/${item.Id}/SpecialFeatures`,
+            `Items/${item.Id}/ThemeVideos`
+        ];
 
-            const trailers = await (
-                typeof client.ajax === "function"
-                    ? client.ajax({
-                        type: "GET",
-                        url,
-                        dataType: "json"
-                    })
-                    : fetch(url, {
-                        credentials: "same-origin"
-                    }).then((response) => response.json())
-            );
+        let preview = null;
 
-            const firstTrailer =
-                Array.isArray(trailers) && trailers.length
-                    ? trailers[0]
-                    : null;
+        for (const endpoint of endpoints) {
+            try {
+                const result = await requestJson(
+                    client.getUrl(endpoint)
+                );
 
-            if (!firstTrailer?.Id) {
-                item._threetideTrailerUrl = "";
-                return "";
-            }
+                preview = choosePreview(
+                    result?.Items || result
+                );
 
-            const trailerUrl = client.getUrl(
-                `Videos/${firstTrailer.Id}/stream`,
-                {
-                    Static: true,
-                    mediaSourceId: firstTrailer.Id
+                if (preview) {
+                    break;
                 }
-            );
+            } catch {
+                // Der Endpunkt ist je nach Jellyfin-Version optional.
+            }
+        }
 
-            item._threetideTrailerUrl = trailerUrl;
-            return trailerUrl;
-        } catch {
-            item._threetideTrailerUrl = "";
+        if (!preview) {
+            try {
+                const result = await requestJson(
+                    client.getUrl(
+                        `Users/${getCurrentUserId()}/Items`,
+                        {
+                            ParentId: item.Id,
+                            Recursive: true,
+                            IncludeItemTypes: "Video,Movie,Episode",
+                            Fields: "Path,RunTimeTicks",
+                            Limit: 30
+                        }
+                    )
+                );
+
+                preview = choosePreview(result?.Items);
+            } catch {
+                // Kein passender Clip als untergeordnetes Medium vorhanden.
+            }
+        }
+
+        if (!preview?.Id) {
+            item._threetidePreviewUrl = "";
             return "";
         }
+
+        const previewUrl = client.getUrl(
+            `Videos/${preview.Id}/stream`,
+            {
+                Static: true,
+                mediaSourceId: preview.Id
+            }
+        );
+
+        item._threetidePreviewUrl = previewUrl;
+        return previewUrl;
     }
 
     async function requestItems(overrides) {
@@ -255,7 +329,7 @@
                 Limit: 40,
                 Fields:
                     "Overview,Taglines,Genres,ProductionYear," +
-                    "CommunityRating,BackdropImageTags," +
+                    "CommunityRating,OfficialRating,RunTimeTicks,BackdropImageTags," +
                     "ParentBackdropImageTags,ParentBackdropItemId",
                 ImageTypeLimit: 1,
                 EnableImages: true,
@@ -306,7 +380,6 @@
     }
 
     async function loadHeroItems() {
-        // 1) Neue Filme (nach Erstellungsdatum)
         const newMoviesResponse = await requestItems({
             IncludeItemTypes: "Movie",
             SortBy: "DateCreated,PremiereDate",
@@ -314,28 +387,28 @@
             Limit: 10
         });
 
-        const newMovies = (newMoviesResponse?.Items || [])
-            .filter(hasBackdropImage)
-            .slice(0, 5);
+        const newMovies =
+            (newMoviesResponse?.Items || [])
+                .filter(hasBackdropImage)
+                .slice(0, 5);
 
         const usedIds = new Set(
             newMovies.map((item) => item.Id)
         );
 
-        // 2) Genre-Mix aus einem groesseren, zufaellig sortierten Pool
         const genrePoolResponse = await requestItems({
             IncludeItemTypes: "Movie",
             SortBy: "Random",
             Limit: 60
         });
 
-        const genrePoolCandidates = (
-            genrePoolResponse?.Items || []
-        ).filter(
-            (item) =>
-                hasBackdropImage(item) &&
-                !usedIds.has(item.Id)
-        );
+        const genrePoolCandidates =
+            (genrePoolResponse?.Items || [])
+                .filter(
+                    (item) =>
+                        hasBackdropImage(item) &&
+                        !usedIds.has(item.Id)
+                );
 
         const seenGenres = new Set();
         const diverseMovies = [];
@@ -357,7 +430,6 @@
             }
         }
 
-        // 3) Neue Serien
         const seriesResponse = await requestItems({
             IncludeItemTypes: "Series",
             SortBy: "DateCreated,PremiereDate",
@@ -365,13 +437,14 @@
             Limit: 10
         });
 
-        const newSeries = (seriesResponse?.Items || [])
-            .filter(
-                (item) =>
-                    hasBackdropImage(item) &&
-                    !usedIds.has(item.Id)
-            )
-            .slice(0, 4);
+        const newSeries =
+            (seriesResponse?.Items || [])
+                .filter(
+                    (item) =>
+                        hasBackdropImage(item) &&
+                        !usedIds.has(item.Id)
+                )
+                .slice(0, 4);
 
         const curated = [
             ...newMovies,
@@ -383,15 +456,13 @@
             return curated;
         }
 
-        // Fallback, falls z.B. Bibliothek noch leer/klein ist:
-        // alte, ungefilterte Mischabfrage.
         const fallbackResponse = await requestItems({
             Limit: 40
         });
 
-        const fallbackCandidates = (
-            fallbackResponse?.Items || []
-        ).filter(hasBackdropImage);
+        const fallbackCandidates =
+            (fallbackResponse?.Items || [])
+                .filter(hasBackdropImage);
 
         if (!fallbackCandidates.length) {
             throw new Error(
@@ -407,37 +478,184 @@
             `/details?id=${encodeURIComponent(itemId)}`;
     }
 
-    function playItem(itemId) {
+    function setPlayerState(active) {
+        document.documentElement.classList.toggle(
+            "threetide-player-active",
+            active
+        );
+
+        document.body?.classList.toggle(
+            "threetide-player-active",
+            active
+        );
+    }
+
+    async function playItem(itemId) {
         if (!itemId) {
             return;
         }
 
-        const playbackManager =
-            window.PlaybackManager ||
-            (
-                typeof PlaybackManager !== "undefined"
-                    ? PlaybackManager
-                    : null
-            );
+        const client = getApiClient();
+        const userId = getCurrentUserId();
 
-        if (
-            playbackManager &&
-            typeof playbackManager.play === "function"
-        ) {
-            playbackManager.play({
-                ids: [itemId]
-            });
-
+        if (!client || !userId) {
+            openDetails(itemId);
             return;
         }
 
-        // Fallback, falls PlaybackManager (noch) nicht verfuegbar ist:
-        // zur Detailseite navigieren, dort kann normal abgespielt werden.
-        openDetails(itemId);
+        clearAutoRotate();
+        clearRetry();
+        remove();
+        setPlayerState(true);
+
+        try {
+            let item;
+
+            if (typeof client.getItem === "function") {
+                item = await client.getItem(
+                    userId,
+                    itemId
+                );
+            } else {
+                const url = client.getUrl(
+                    `Users/${userId}/Items/${itemId}`
+                );
+
+                item = await (
+                    typeof client.ajax === "function"
+                        ? client.ajax({
+                            type: "GET",
+                            url,
+                            dataType: "json"
+                        })
+                        : fetch(url, {
+                            credentials: "same-origin"
+                        }).then((response) => {
+                            if (!response.ok) {
+                                throw new Error(
+                                    `HTTP ${response.status}`
+                                );
+                            }
+
+                            return response.json();
+                        })
+                );
+            }
+
+            /*
+             * jellyfin-web stellt den PlaybackManager NICHT als
+             * window-Global bereit (ES-Modul). Zuverlaessiger Weg
+             * aus injiziertem Code: Play-Befehl per Sessions-API an
+             * die EIGENE Session schicken - der Client empfaengt ihn
+             * ueber seinen WebSocket und startet die native
+             * Wiedergabe inkl. OSD selbst.
+             */
+            const deviceId =
+                client.deviceId?.() ||
+                client._deviceId ||
+                "";
+
+            const sessionsUrl = client.getUrl(
+                "Sessions",
+                deviceId ? { deviceId } : undefined
+            );
+
+            const sessions = await (
+                typeof client.ajax === "function"
+                    ? client.ajax({
+                        type: "GET",
+                        url: sessionsUrl,
+                        dataType: "json"
+                    })
+                    : fetch(sessionsUrl, {
+                        credentials: "same-origin"
+                    }).then((response) => response.json())
+            );
+
+            const ownSession =
+                (Array.isArray(sessions) ? sessions : []).find(
+                    (session) =>
+                        session?.DeviceId === deviceId
+                ) ||
+                (Array.isArray(sessions) ? sessions[0] : null);
+
+            if (!ownSession?.Id) {
+                throw new Error(
+                    "Eigene Jellyfin-Session nicht gefunden."
+                );
+            }
+
+            const playUrl = client.getUrl(
+                `Sessions/${ownSession.Id}/Playing`,
+                {
+                    playCommand: "PlayNow",
+                    itemIds: itemId,
+                    startPositionTicks:
+                        item?.UserData?.PlaybackPositionTicks || 0
+                }
+            );
+
+            if (typeof client.ajax === "function") {
+                await client.ajax({
+                    type: "POST",
+                    url: playUrl
+                });
+            } else {
+                const response = await fetch(playUrl, {
+                    method: "POST",
+                    credentials: "same-origin"
+                });
+
+                if (!response.ok) {
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+            }
+
+            console.info(
+                `[3Tide] Direkte Wiedergabe gestartet: ${item?.Name || itemId}`
+            );
+        } catch (error) {
+            setPlayerState(false);
+
+            console.error(
+                "[3Tide] Direkte Wiedergabe fehlgeschlagen.",
+                error
+            );
+
+            openDetails(itemId);
+        }
+    }
+
+    function formatRuntime(runTimeTicks) {
+        const ticks = Number(runTimeTicks || 0);
+
+        if (!ticks) {
+            return "";
+        }
+
+        const totalMinutes = Math.round(
+            ticks / 600000000
+        );
+
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        if (hours <= 0) {
+            return `${minutes} Min.`;
+        }
+
+        if (minutes <= 0) {
+            return `${hours} Std.`;
+        }
+
+        return `${hours} Std. ${minutes} Min.`;
     }
 
     function createHero(item) {
-        const hero = document.createElement("section");
+        const hero =
+            document.createElement("section");
 
         hero.id = HERO_ID;
         hero.className = "threetide-hero";
@@ -465,13 +683,26 @@
                 ? `<span>★ ${item.CommunityRating.toFixed(1)}</span>`
                 : "";
 
+        const runtime = formatRuntime(
+            item.RunTimeTicks
+        );
+
+        const runtimeHtml = runtime
+            ? `<span>${escapeHtml(runtime)}</span>`
+            : "";
+
+        const officialRating = item.OfficialRating
+            ? `<span class="threetide-hero-age">${escapeHtml(item.OfficialRating)}</span>`
+            : "";
+
         hero.innerHTML = `
             <div class="threetide-hero-backdrop"></div>
             <video
                 class="threetide-hero-preview-video"
                 muted
                 playsinline
-                preload="none"></video>
+                disablepictureinpicture
+                preload="metadata"></video>
             <div class="threetide-hero-overlay"></div>
 
             <button
@@ -500,6 +731,8 @@
                 <div class="threetide-hero-meta">
                     <span>${itemType}</span>
                     ${year}
+                    ${runtimeHtml}
+                    ${officialRating}
                     ${rating}
                 </div>
 
@@ -549,7 +782,6 @@
 
         let previewHoverTimer = null;
         let previewStopTimer = null;
-
         let previewToken = 0;
 
         function stopPreview() {
@@ -579,16 +811,15 @@
         }
 
         async function startPreview() {
-            if (!previewVideo) {
+            if (!previewVideo || !shouldAutoplayPreview()) {
                 return;
             }
 
             const requestToken = previewToken;
-            const previewUrl = await fetchLocalTrailerUrl(item);
+            const previewUrl =
+                await fetchPreviewUrl(item);
 
             if (requestToken !== previewToken) {
-                // Zwischenzeitlich wurde die Vorschau abgebrochen
-                // (z.B. Maus schon wieder weg).
                 return;
             }
 
@@ -605,29 +836,29 @@
                         "threetide-hero-preview-video--active"
                     );
 
-                    previewStopTimer = window.setTimeout(
-                        stopPreview,
-                        PREVIEW_MAX_DURATION_MS
-                    );
+                    previewStopTimer =
+                        window.setTimeout(
+                            stopPreview,
+                            PREVIEW_MAX_DURATION_MS
+                        );
                 })
                 .catch(() => {
-                    // Codec vom Browser nicht direkt abspielbar
-                    // oder Anfrage abgebrochen - einfach beim
-                    // Standbild bleiben.
                     stopPreview();
                 });
         }
 
         function schedulePreview() {
-            previewHoverTimer = window.setTimeout(
-                startPreview,
-                PREVIEW_HOVER_DELAY_MS
-            );
+            previewHoverTimer =
+                window.setTimeout(
+                    startPreview,
+                    PREVIEW_HOVER_DELAY_MS
+                );
         }
 
         hero
             .querySelector('[data-action="play"]')
             ?.addEventListener("click", (event) => {
+                event.preventDefault();
                 event.stopPropagation();
                 playItem(item.Id);
             });
@@ -699,7 +930,10 @@
 
                 touchStartX = null;
 
-                if (Math.abs(distance) < SWIPE_THRESHOLD_PX) {
+                if (
+                    Math.abs(distance) <
+                    SWIPE_THRESHOLD_PX
+                ) {
                     scheduleAutoRotate();
                     return;
                 }
@@ -727,6 +961,12 @@
             }
         });
 
+        hero._threetideStopPreview = stopPreview;
+
+        if (shouldAutoplayPreview()) {
+            schedulePreview();
+        }
+
         return hero;
     }
 
@@ -746,7 +986,9 @@
             return;
         }
 
-        document.getElementById(HERO_ID)?.remove();
+        const previousHero = document.getElementById(HERO_ID);
+        previousHero?._threetideStopPreview?.();
+        previousHero?.remove();
 
         const item = heroItems[currentIndex];
         const hero = createHero(item);
@@ -834,7 +1076,10 @@
 
     function remove() {
         clearAutoRotate();
-        document.getElementById(HERO_ID)?.remove();
+
+        const hero = document.getElementById(HERO_ID);
+        hero?._threetideStopPreview?.();
+        hero?.remove();
     }
 
     function sync() {

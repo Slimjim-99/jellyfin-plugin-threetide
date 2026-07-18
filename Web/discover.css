@@ -769,3 +769,29 @@
             font-size: 15px;
         }
 }
+
+
+/* Discover must stay inside the current viewport. */
+.threetide-discover-modal {
+    width: min(96vw, 1500px) !important;
+    height: min(90dvh, 960px) !important;
+    max-height: min(90dvh, 960px) !important;
+    margin: 0 !important;
+}
+
+.threetide-discover-modal .threetide-modal-body {
+    flex: 1 1 auto !important;
+    height: auto !important;
+    overflow: hidden !important;
+}
+
+.threetide-discover-modal .threetide-discover {
+    height: 100% !important;
+    max-height: 100% !important;
+    overflow-y: auto !important;
+}
+
+html.threetide-discover-open,
+html.threetide-discover-open body {
+    overflow: hidden !important;
+}

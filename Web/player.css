@@ -1,0 +1,246 @@
+/* =========================================================
+   3Tide Player Skin (einzige Quelle - der alte Player-Block
+   in theme.css wurde entfernt, damit sich nichts mehr beisst)
+
+   Grundsaetze:
+   - Layout-Eigenschaften von OSD-Elementen nicht anfassen,
+     Jellyfin blendet das OSD selbst ein/aus.
+   - Verlaeufe DOM-unabhaengig ueber #videoOsdPage::before/::after,
+     damit es egal ist, wie 10.11 seine OSD-Klassen nennt.
+   ========================================================= */
+
+/* Schwarzer Untergrund */
+body.threetide-player-active,
+body.threetide-player-active .videoPlayerContainer,
+body.threetide-player-active .htmlVideoPlayer {
+    background: #000 !important;
+}
+
+body.threetide-player-active .backgroundContainer,
+body.threetide-player-active .backdropContainer {
+    background: #000 !important;
+    background-image: none !important;
+}
+
+/* 3Tide-Oberflaechen weg (Fallback ohne :has(), auch fuer TV) */
+body.threetide-player-active .threetide-header,
+body.threetide-player-active .threetide-drawer,
+body.threetide-player-active .threetide-drawer-backdrop,
+body.threetide-player-active .threetide-hero {
+    display: none !important;
+}
+
+/* ---------------------------------------------------------
+   Verlaeufe oben/unten - DOM-unabhaengig
+   --------------------------------------------------------- */
+#videoOsdPage::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 24vh;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.78) 0%,
+        rgba(0, 0, 0, 0.38) 50%,
+        transparent 100%
+    );
+}
+
+#videoOsdPage::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 34vh;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.92) 0%,
+        rgba(0, 0, 0, 0.55) 50%,
+        transparent 100%
+    );
+}
+
+/* OSD-Inhalte ueber die Verlaeufe heben */
+#videoOsdPage > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* ---------------------------------------------------------
+   Titel: normale Groesse in nativer Position
+   (der 3.5rem-clamp aus theme.css war das Riesen-Titel-Problem)
+   --------------------------------------------------------- */
+body.threetide-player-active .osdTitle {
+    font-size: clamp(1.05rem, 1.6vw, 1.55rem) !important;
+    font-weight: 700 !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.01em !important;
+    color: #fff !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+}
+
+body.threetide-player-active .osdSecondaryMediaInfo,
+body.threetide-player-active .osdMediaInfo {
+    color: rgba(255, 255, 255, 0.72) !important;
+    font-size: 0.92rem !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Zeitangaben */
+body.threetide-player-active .startTimeText,
+body.threetide-player-active .endTimeText,
+body.threetide-player-active .endsAtText,
+body.threetide-player-active .osdPositionText,
+body.threetide-player-active .osdDurationText {
+    color: rgba(255, 255, 255, 0.78) !important;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------
+   Buttons: dezente Glasflaechen, Play/Pause weisser Kreis
+   --------------------------------------------------------- */
+body.threetide-player-active #videoOsdPage button,
+body.threetide-player-active #videoOsdPage .paper-icon-button-light {
+    color: #fff !important;
+    border-radius: 999px !important;
+    transition:
+        transform 150ms ease,
+        background-color 150ms ease !important;
+}
+
+body.threetide-player-active #videoOsdPage button:hover,
+body.threetide-player-active #videoOsdPage .paper-icon-button-light:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    transform: scale(1.08);
+}
+
+body.threetide-player-active #videoOsdPage button:focus {
+    background: rgba(224, 36, 46, 0.85) !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9);
+    outline: none;
+}
+
+body.threetide-player-active #videoOsdPage .btnPause,
+body.threetide-player-active #videoOsdPage .btnPlay,
+body.threetide-player-active #videoOsdPage .btnPlayPause {
+    width: 52px !important;
+    height: 52px !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    color: #111 !important;
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.threetide-player-active #videoOsdPage .btnPause:hover,
+body.threetide-player-active #videoOsdPage .btnPlay:hover,
+body.threetide-player-active #videoOsdPage .btnPlayPause:hover {
+    background: #fff !important;
+    color: #111 !important;
+    transform: scale(1.08);
+}
+
+/* ---------------------------------------------------------
+   Fortschrittsbalken: roter 3Tide-Akzent
+   (accent-color deckt das native input[type=range] in 10.11 ab,
+   die uebrigen Selektoren aeltere Markup-Varianten)
+   --------------------------------------------------------- */
+body.threetide-player-active #videoOsdPage input[type="range"],
+body.threetide-player-active #videoOsdPage .osdPositionSlider {
+    accent-color: #e0242e !important;
+}
+
+body.threetide-player-active .emby-slider-background-lower,
+body.threetide-player-active .mdl-slider-background-lower {
+    background: #e0242e !important;
+}
+
+body.threetide-player-active .emby-slider-background-upper,
+body.threetide-player-active .mdl-slider-background-upper {
+    background: rgba(255, 255, 255, 0.22) !important;
+}
+
+body.threetide-player-active #videoOsdPage input[type="range"]::-webkit-slider-thumb {
+    background: #e0242e !important;
+    box-shadow: 0 0 6px rgba(224, 36, 46, 0.8);
+}
+
+/* ---------------------------------------------------------
+   3Tide Zurueck-Button (erzeugt player.js)
+   Der native Zurueck-Pfeil sitzt im skinHeader, den 3Tide
+   versteckt - dieser Button ist unser eigener, zuverlaessiger
+   Ersatz. Blendet mit der OSD-Aktivitaet ein/aus.
+   --------------------------------------------------------- */
+.threetide-osd-back {
+    position: fixed;
+    top: max(1.1rem, env(safe-area-inset-top));
+    left: 1.3rem;
+    z-index: 100060;
+    width: 46px;
+    height: 46px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(20, 20, 20, 0.62);
+    color: #fff;
+    font-size: 24px;
+    line-height: 46px;
+    text-align: center;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease, background-color 150ms ease;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+body.threetide-player-active.threetide-osd-visible .threetide-osd-back {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.threetide-osd-back:hover,
+.threetide-osd-back:focus {
+    background: rgba(224, 36, 46, 0.9);
+    outline: none;
+}
+
+/* ---------------------------------------------------------
+   Menues: Audio, Untertitel, Qualitaet
+   --------------------------------------------------------- */
+body.threetide-player-active .actionSheet,
+body.threetide-player-active .dialog,
+body.threetide-player-active .selectMenu {
+    color: #fff !important;
+    background: rgba(15, 15, 15, 0.96) !important;
+    border: 1px solid rgba(255, 255, 255, 0.11) !important;
+    border-radius: 16px !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+}
+
+body.threetide-player-active .actionSheetMenuItem:hover,
+body.threetide-player-active .actionSheetMenuItem:focus {
+    background: rgba(224, 36, 46, 0.35) !important;
+}
+
+/* ---------------------------------------------------------
+   Mobil / Touch
+   --------------------------------------------------------- */
+@media (max-width: 850px) {
+    body.threetide-player-active #videoOsdPage button {
+        min-width: 42px !important;
+        min-height: 42px !important;
+    }
+
+    .threetide-osd-back {
+        left: 0.8rem;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    body.threetide-player-active #videoOsdPage button {
+        min-width: 46px !important;
+        min-height: 46px !important;
+    }
+}

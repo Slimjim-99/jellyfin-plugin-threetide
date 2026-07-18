@@ -10,6 +10,16 @@ namespace Jellyfin.Plugin.ThreeTide.Transformations;
 /// </summary>
 public static class IndexHtmlTransformation
 {
+    /*
+     * The injection block only changes when the plugin configuration
+     * or branding changes. Building it involves reading ~20 embedded
+     * assets and string-joining several hundred KB - caching it keyed
+     * by the serialized config avoids doing that on every request.
+     */
+    private static readonly object CacheLock = new();
+    private static string? _cachedInjection;
+    private static string? _cachedKey;
+
     /// <summary>
     /// Applies the 3Tide transformation to Jellyfin's index.html.
     /// File Transformation 2.5.x expects a string as return value.
@@ -53,25 +63,8 @@ public static class IndexHtmlTransformation
             return html;
         }
 
-        List<string> styles =
-        [
-            Plugin.ReadEmbeddedText("theme.css"),
-            Plugin.ReadEmbeddedText("header.css"),
-            Plugin.ReadEmbeddedText("hero.css"),
-            Plugin.ReadEmbeddedText("home.css"),
-            Plugin.ReadEmbeddedText("search.css"),
-            Plugin.ReadEmbeddedText("ui.css"),
-            Plugin.ReadEmbeddedText("discover.css"),
-            Plugin.ReadEmbeddedText("catalog.css")
-        ];
-
         string brandingCss =
             Plugin.BrandingService.BuildCss();
-
-        if (!string.IsNullOrWhiteSpace(brandingCss))
-        {
-            styles.Add(brandingCss);
-        }
 
         string browserConfig =
             JsonSerializer.Serialize(
@@ -106,79 +99,32 @@ public static class IndexHtmlTransformation
                         Plugin.BrandingService.LogoUrl
                 });
 
-        string apiScript =
-            Plugin.ReadEmbeddedText("api.js");
+        string cacheKey =
+            browserConfig + "\u0001" + brandingCss;
 
-        string uiScript =
-            Plugin.ReadEmbeddedText("ui.js");
+        string injection;
 
-        string catalogScript =
-            Plugin.ReadEmbeddedText("catalog.js");
+        lock (CacheLock)
+        {
+            if (
+                _cachedInjection is not null &&
+                string.Equals(
+                    _cachedKey,
+                    cacheKey,
+                    StringComparison.Ordinal))
+            {
+                injection = _cachedInjection;
+            }
+            else
+            {
+                injection = BuildInjection(
+                    browserConfig,
+                    brandingCss);
 
-        string discoverScript =
-            Plugin.ReadEmbeddedText("discover.js");
-
-        string headerScript =
-            Plugin.ReadEmbeddedText("header.js");
-
-        string heroScript =
-            Plugin.ReadEmbeddedText("hero.js");
-
-        string homeScript =
-            Plugin.ReadEmbeddedText("home.js");
-
-        string searchScript =
-            Plugin.ReadEmbeddedText("search.js");
-
-        string runtimeScript =
-            Plugin.ReadEmbeddedText("runtime.js");
-
-        string injection =
-$"""
-<style id="threetide-theme">
-{string.Join(Environment.NewLine, styles)}
-</style>
-
-<script id="threetide-bootstrap">
-window.__THREETIDE_CONFIG__ = {browserConfig};
-</script>
-
-<script id="threetide-api-script">
-{apiScript}
-</script>
-
-<script id="threetide-ui-script">
-{uiScript}
-</script>
-
-<script id="threetide-catalog-script">
-{catalogScript}
-</script>
-
-<script id="threetide-discover-script">
-{discoverScript}
-</script>
-
-<script id="threetide-header-script">
-{headerScript}
-</script>
-
-<script id="threetide-hero-script">
-{heroScript}
-</script>
-
-<script id="threetide-home-script">
-{homeScript}
-</script>
-
-<script id="threetide-search-script">
-{searchScript}
-</script>
-
-<script id="threetide-runtime-script">
-{runtimeScript}
-</script>
-""";
+                _cachedInjection = injection;
+                _cachedKey = cacheKey;
+            }
+        }
 
         int bodyIndex =
             html.LastIndexOf(
@@ -197,6 +143,153 @@ window.__THREETIDE_CONFIG__ = {browserConfig};
         return html.Insert(
             bodyIndex,
             injection);
+    }
+
+    private static string BuildInjection(
+        string browserConfig,
+        string brandingCss)
+    {
+        List<string> styles =
+        [
+            Plugin.ReadEmbeddedText("theme.css"),
+            Plugin.ReadEmbeddedText("header.css"),
+            Plugin.ReadEmbeddedText("hero.css"),
+            Plugin.ReadEmbeddedText("home.css"),
+            Plugin.ReadEmbeddedText("search.css"),
+            Plugin.ReadEmbeddedText("ui.css"),
+            Plugin.ReadEmbeddedText("discover.css"),
+            Plugin.ReadEmbeddedText("catalog.css"),
+            Plugin.ReadEmbeddedText("player.css"),
+            Plugin.ReadEmbeddedText("tv.css")
+        ];
+
+        if (!string.IsNullOrWhiteSpace(brandingCss))
+        {
+            styles.Add(brandingCss);
+        }
+
+        string apiScript =
+            Plugin.ReadEmbeddedText("api.js");
+
+        string uiScript =
+            Plugin.ReadEmbeddedText("ui.js");
+
+        string catalogScript =
+            Plugin.ReadEmbeddedText("catalog.js");
+
+        string discoverScript =
+            Plugin.ReadEmbeddedText("discover.js");
+
+        string headerScript =
+            Plugin.ReadEmbeddedText("header.js");
+
+        string heroScript =
+            Plugin.ReadEmbeddedText("Hero.js");
+
+        string homeScript =
+            Plugin.ReadEmbeddedText("home.js");
+
+        string searchScript =
+            Plugin.ReadEmbeddedText("search.js");
+
+        string detailsScript =
+            Plugin.ReadEmbeddedText("details.js");
+
+        string playerTitleScript =
+            Plugin.ReadEmbeddedText("player-titel.js");
+
+        string playerScript =
+            Plugin.ReadEmbeddedText("player.js");
+
+        string tvScript =
+            Plugin.ReadEmbeddedText("tv.js");
+
+        string runtimeScript =
+            Plugin.ReadEmbeddedText("runtime.js");
+
+        string injection =
+$$"""
+<style id="threetide-theme">
+{{string.Join(Environment.NewLine, styles)}}
+</style>
+
+<script id="threetide-bootstrap">
+window.__THREETIDE_CONFIG__ = {{browserConfig}};
+</script>
+
+<script id="threetide-tv-script">
+{{tvScript}}
+</script>
+
+<script id="threetide-api-script">
+{{apiScript}}
+</script>
+
+<script id="threetide-ui-script">
+{{uiScript}}
+</script>
+
+<script id="threetide-catalog-script">
+{{catalogScript}}
+</script>
+
+<script id="threetide-discover-script">
+{{discoverScript}}
+</script>
+
+<script id="threetide-header-script">
+{{headerScript}}
+</script>
+
+<script id="threetide-hero-script">
+{{heroScript}}
+</script>
+
+<script id="threetide-hero-compatibility">
+window.ThreeTideHero =
+    window.ThreeTideHero ||
+    window.ThreeTide?.Hero ||
+    window.ThreeTide?.hero ||
+    null;
+
+if (window.ThreeTideHero) {
+    console.info(
+        "[3Tide] Hero-Kompatibilitätsbrücke aktiv.",
+        window.ThreeTideHero
+    );
+} else {
+    console.error(
+        "[3Tide] Hero.js wurde geladen, exportiert aber kein Hero-Modul."
+    );
+}
+</script>
+
+<script id="threetide-home-script">
+{{homeScript}}
+</script>
+
+<script id="threetide-search-script">
+{{searchScript}}
+</script>
+
+<script id="threetide-details-script">
+{{detailsScript}}
+</script>
+
+<script id="threetide-player-title-script">
+{{playerTitleScript}}
+</script>
+
+<script id="threetide-player-script">
+{{playerScript}}
+</script>
+
+<script id="threetide-runtime-script">
+{{runtimeScript}}
+</script>
+""";
+
+        return injection;
     }
 
     private static bool IsHtmlDocument(string contents)

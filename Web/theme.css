@@ -411,62 +411,727 @@ body:not(:has(.homePage, .view-home, .homeSectionsContainer))
     display: none !important;
 }
 /* =========================================================
-   3Tide – nativen Jellyfin-Player freihalten
+   3Tide – Detailseite Premium Layout
    ========================================================= */
 
-body:has(#videoOsdPage:not(.hide))
-.threetide-header,
-body:has(#videoOsdPage:not(.hide))
-.threetide-drawer-backdrop,
-body:has(#videoOsdPage:not(.hide))
-.threetide-hero,
-body:has(#videoOsdPage:not(.hide))
-.threetide-home-root {
+.itemDetailPage {
+    position: relative !important;
+    min-height: 100vh !important;
+    padding-top: 0 !important;
+    background: #080808 !important;
+}
+
+    .itemDetailPage .detailPageWrapperContainer,
+    .itemDetailPage .detailPageContent {
+        position: relative !important;
+        z-index: 3 !important;
+    }
+
+    .itemDetailPage .detailPagePrimaryContainer {
+        display: grid !important;
+        grid-template-columns: minmax(210px, 300px) minmax(0, 1fr) !important;
+        align-items: end !important;
+        gap: clamp(2rem, 4vw, 4.5rem) !important;
+        min-height: min(76vh, 820px) !important;
+        padding: clamp(7rem, 12vh, 10rem) clamp(2rem, 5vw, 5.5rem) clamp(2.5rem, 6vh, 5rem) !important;
+        background: linear-gradient( 90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.78) 38%, rgba(5, 5, 5, 0.28) 72%, transparent 100% ), linear-gradient( 0deg, #080808 0%, rgba(8, 8, 8, 0.78) 22%, transparent 60% ) !important;
+    }
+
+    .itemDetailPage .detailImageContainer {
+        width: 100% !important;
+        max-width: 300px !important;
+        margin: 0 !important;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.66) !important;
+    }
+
+    .itemDetailPage .detailPagePrimaryContent {
+        max-width: 920px !important;
+        padding: 0 !important;
+    }
+
+    .itemDetailPage .itemName {
+        margin: 0 0 0.7rem !important;
+        color: #fff !important;
+        font-size: clamp(2.8rem, 5.5vw, 6rem) !important;
+        font-weight: 850 !important;
+        line-height: 0.98 !important;
+        letter-spacing: -0.055em !important;
+        text-shadow: 0 4px 24px rgba(0, 0, 0, 0.75) !important;
+    }
+
+    .itemDetailPage .itemMiscInfo {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 0.65rem !important;
+        margin: 0 0 1rem !important;
+        color: rgba(255, 255, 255, 0.76) !important;
+        font-size: 0.98rem !important;
+    }
+
+    .itemDetailPage .tagline {
+        margin: 0.7rem 0 1rem !important;
+        color: rgba(255, 255, 255, 0.88) !important;
+        font-size: clamp(1rem, 1.45vw, 1.3rem) !important;
+        font-weight: 550 !important;
+    }
+
+    .itemDetailPage .overview {
+        max-width: 820px !important;
+        margin-top: 1rem !important;
+        color: rgba(255, 255, 255, 0.78) !important;
+        font-size: clamp(1rem, 1.3vw, 1.18rem) !important;
+        line-height: 1.65 !important;
+    }
+
+    .itemDetailPage .mainDetailButtons {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 0.75rem !important;
+        margin-top: 1.5rem !important;
+    }
+
+        .itemDetailPage .mainDetailButtons .btnPlay,
+        .itemDetailPage .mainDetailButtons .btnResume {
+            min-height: 52px !important;
+            padding: 0 1.45rem !important;
+            border-radius: 8px !important;
+            color: #fff !important;
+            background: linear-gradient( 135deg, #f31322, #b90812 ) !important;
+            font-weight: 800 !important;
+            box-shadow: 0 12px 30px rgba(229, 9, 20, 0.28) !important;
+        }
+
+        .itemDetailPage .mainDetailButtons button:not(.btnPlay):not(.btnResume) {
+            min-width: 48px !important;
+            min-height: 48px !important;
+            border-radius: 999px !important;
+            color: #fff !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(12px) !important;
+        }
+
+    .itemDetailPage .detailPageSecondaryContainer {
+        position: relative !important;
+        z-index: 4 !important;
+        padding: 2.5rem clamp(2rem, 5vw, 5.5rem) 5rem !important;
+        background: #080808 !important;
+    }
+
+    .itemDetailPage .sectionTitle {
+        color: #fff !important;
+        font-size: clamp(1.35rem, 2vw, 2rem) !important;
+        font-weight: 750 !important;
+    }
+
+@media (max-width: 820px) {
+    .itemDetailPage .detailPagePrimaryContainer {
+        display: block !important;
+        min-height: auto !important;
+        padding: 6rem 1rem 2rem !important;
+        background: linear-gradient( 0deg, #080808 0%, rgba(8, 8, 8, 0.8) 48%, rgba(8, 8, 8, 0.35) 100% ) !important;
+    }
+
+    .itemDetailPage .detailImageContainer {
+        width: 150px !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .itemDetailPage .itemName {
+        font-size: clamp(2.3rem, 10vw, 4rem) !important;
+    }
+
+    .itemDetailPage .overview {
+        max-width: none !important;
+        font-size: 1rem !important;
+    }
+
+    .itemDetailPage .detailPageSecondaryContainer {
+        padding: 1rem 1rem 3rem !important;
+    }
+}
+/* =========================================================
+   3Tide – Login
+   ========================================================= */
+
+/* Eigener Header darf auf Login-/Serverseiten nicht erscheinen */
+body:has(.loginPage) .threetide-header,
+body:has(.loginPage) .threetide-drawer-backdrop,
+body:has(.selectServerPage) .threetide-header,
+body:has(.selectServerPage) .threetide-drawer-backdrop {
+    display: none !important;
+}
+
+/* Nativen Header auf der Login-Seite ebenfalls vollständig entfernen */
+body:has(.loginPage) .skinHeader,
+body:has(.selectServerPage) .skinHeader {
+    display: none !important;
+}
+
+/* Gesamte Login-Seite */
+.loginPage {
+    position: fixed !important;
+    inset: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100vw !important;
+    min-height: 100vh !important;
+    padding: max(2rem, env(safe-area-inset-top)) 1.25rem max(2rem, env(safe-area-inset-bottom)) !important;
+    overflow: auto !important;
+    background: radial-gradient( circle at 78% 18%, rgba(229, 9, 20, 0.17), transparent 34% ), radial-gradient( circle at 14% 84%, rgba(120, 0, 12, 0.12), transparent 32% ), linear-gradient( 145deg, #050505 0%, #0b0b0b 50%, #030303 100% ) !important;
+}
+
+    /* Dezente Hintergrundstruktur */
+    .loginPage::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.35;
+        background: linear-gradient( 115deg, transparent 0%, rgba(255, 255, 255, 0.025) 48%, transparent 70% );
+    }
+
+    /* Login-Formular als hochwertige Card */
+    .loginPage .readOnlyContent,
+    .loginPage .padded-left,
+    .loginPage .padded-right,
+    .loginPage form {
+        box-sizing: border-box !important;
+    }
+
+    .loginPage .readOnlyContent {
+        position: relative !important;
+        z-index: 2 !important;
+        width: min(100%, 520px) !important;
+        max-width: 520px !important;
+        margin: auto !important;
+        padding: 7.5rem clamp(1.5rem, 4vw, 3rem) clamp(2rem, 5vw, 3rem) !important;
+        border: 1px solid rgba(255, 255, 255, 0.09) !important;
+        border-radius: 24px !important;
+        background: linear-gradient( 155deg, rgba(25, 25, 25, 0.97), rgba(10, 10, 10, 0.97) ) !important;
+        backdrop-filter: blur(24px) !important;
+        -webkit-backdrop-filter: blur(24px) !important;
+        box-shadow: 0 36px 100px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    }
+
+        /* 3Tide-Logo über dem Formular */
+        .loginPage .readOnlyContent::before {
+            content: "3Tide";
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            color: var(--threetide-brand-color, #e50914);
+            font-size: clamp(2.8rem, 8vw, 4.3rem);
+            font-weight: 950;
+            line-height: 1;
+            letter-spacing: -0.085em;
+            text-shadow: 0 8px 30px rgba(229, 9, 20, 0.28);
+            transform: translateX(-50%);
+        }
+
+    /* Titel */
+    .loginPage .pageTitle {
+        margin: 0 0 2rem !important;
+        color: #fff !important;
+        font-size: clamp(1.65rem, 4vw, 2.15rem) !important;
+        font-weight: 750 !important;
+        line-height: 1.15 !important;
+        letter-spacing: -0.035em !important;
+        text-align: center !important;
+    }
+
+    /* Labels */
+    .loginPage .inputLabel,
+    .loginPage label {
+        color: rgba(255, 255, 255, 0.75) !important;
+        font-size: 0.92rem !important;
+        font-weight: 600 !important;
+    }
+
+    /* Eingabefelder */
+    .loginPage .emby-input,
+    .loginPage input[type="text"],
+    .loginPage input[type="password"],
+    .loginPage input[type="email"] {
+        min-height: 54px !important;
+        padding: 0 1rem !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        border-radius: 10px !important;
+        color: #fff !important;
+        background: rgba(255, 255, 255, 0.07) !important;
+        box-shadow: none !important;
+        transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease !important;
+    }
+
+        .loginPage .emby-input:hover,
+        .loginPage input:hover {
+            border-color: rgba(255, 255, 255, 0.22) !important;
+            background: rgba(255, 255, 255, 0.09) !important;
+        }
+
+        .loginPage .emby-input:focus,
+        .loginPage input:focus {
+            border-color: var(--threetide-brand-color, #e50914) !important;
+            outline: none !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.18) !important;
+        }
+
+    /* Checkbox rot */
+    .loginPage .checkboxOutline {
+        border-color: rgba(255, 255, 255, 0.38) !important;
+        border-radius: 5px !important;
+    }
+
+    .loginPage .emby-checkbox:checked +
+    .checkboxLabel
+    .checkboxOutline {
+        border-color: var(--threetide-brand-color, #e50914) !important;
+        background: var(--threetide-brand-color, #e50914) !important;
+    }
+
+    /* Hauptbutton */
+    .loginPage .btnSubmit,
+    .loginPage button[type="submit"] {
+        min-height: 54px !important;
+        margin-top: 1rem !important;
+        border: 0 !important;
+        border-radius: 10px !important;
+        color: #fff !important;
+        background: linear-gradient( 135deg, #f31322, #b80812 ) !important;
+        font-size: 1rem !important;
+        font-weight: 800 !important;
+        box-shadow: 0 14px 34px rgba(229, 9, 20, 0.27) !important;
+        transition: transform 150ms ease, filter 150ms ease, box-shadow 150ms ease !important;
+    }
+
+        .loginPage .btnSubmit:hover,
+        .loginPage button[type="submit"]:hover {
+            filter: brightness(1.12) !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 18px 42px rgba(229, 9, 20, 0.34) !important;
+        }
+
+    /* Quick Connect und Passwort vergessen */
+    .loginPage .btnQuick,
+    .loginPage .btnForgotPassword,
+    .loginPage .raised:not(.btnSubmit) {
+        min-height: 49px !important;
+        border: 1px solid rgba(255, 255, 255, 0.09) !important;
+        border-radius: 10px !important;
+        color: rgba(255, 255, 255, 0.88) !important;
+        background: rgba(255, 255, 255, 0.07) !important;
+        font-weight: 650 !important;
+        box-shadow: none !important;
+    }
+
+        .loginPage .btnQuick:hover,
+        .loginPage .btnForgotPassword:hover,
+        .loginPage .raised:not(.btnSubmit):hover {
+            border-color: rgba(229, 9, 20, 0.42) !important;
+            color: #fff !important;
+            background: rgba(229, 9, 20, 0.12) !important;
+        }
+
+    /* Abstände zwischen Formelementen */
+    .loginPage .inputContainer {
+        margin-bottom: 1.15rem !important;
+    }
+
+    .loginPage .checkboxContainer {
+        margin: 1.2rem 0 1.4rem !important;
+    }
+
+    /* Browser-Passwortsymbol etwas dezenter */
+    .loginPage input::-webkit-credentials-auto-fill-button {
+        filter: grayscale(1) brightness(1.5);
+    }
+
+/* Kleine Displays */
+@media (max-width: 600px) {
+    .loginPage {
+        align-items: flex-start !important;
+        padding: max(1rem, env(safe-area-inset-top)) 0.75rem max(1rem, env(safe-area-inset-bottom)) !important;
+    }
+
+        .loginPage .readOnlyContent {
+            width: 100% !important;
+            margin-top: 1rem !important;
+            padding: 6.5rem 1.25rem 1.5rem !important;
+            border-radius: 18px !important;
+        }
+
+            .loginPage .readOnlyContent::before {
+                top: 1.6rem;
+                font-size: 3rem;
+            }
+}
+/* Login: sämtliche Navigation sicher entfernen */
+
+html.threetide-login-active .threetide-header,
+html.threetide-login-active .threetide-drawer-backdrop,
+body.threetide-login-active .threetide-header,
+body.threetide-login-active .threetide-drawer-backdrop,
+body.threetide-login-active .skinHeader {
+    display: none !important;
+}
+
+body.threetide-login-active {
+    background: radial-gradient( circle at 75% 15%, rgba(229, 9, 20, 0.18), transparent 34% ), #050505 !important;
+}
+
+    /* Tatsächlichen Jellyfin-Logincontainer zentrieren */
+
+    body.threetide-login-active .page,
+    body.threetide-login-active .mainAnimatedPage {
+        padding-top: 0 !important;
+        background: transparent !important;
+    }
+
+    body.threetide-login-active .readOnlyContent {
+        width: min(92vw, 520px) !important;
+        max-width: 520px !important;
+        margin: 8vh auto 0 !important;
+        padding: 7rem 2.5rem 2.5rem !important;
+        border: 1px solid rgba(255, 255, 255, 0.09) !important;
+        border-radius: 24px !important;
+        background: linear-gradient( 155deg, rgba(25, 25, 25, 0.98), rgba(8, 8, 8, 0.98) ) !important;
+        box-shadow: 0 35px 100px rgba(0, 0, 0, 0.7) !important;
+    }
+
+        body.threetide-login-active .readOnlyContent::before {
+            content: "3Tide";
+            position: absolute;
+            top: 1.8rem;
+            left: 50%;
+            color: #e50914;
+            font-size: 3.8rem;
+            font-weight: 950;
+            letter-spacing: -0.085em;
+            transform: translateX(-50%);
+        }
+
+    body.threetide-login-active input {
+        color: #fff !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    body.threetide-login-active .btnSubmit,
+    body.threetide-login-active button[type="submit"] {
+        background: #e50914 !important;
+    }
+/* =========================================================
+   3Tide – Login sicher isolieren
+   ========================================================= */
+
+html.threetide-login-active .threetide-header,
+html.threetide-login-active .threetide-drawer-backdrop,
+.threetide-header.threetide-hidden-on-login,
+.threetide-drawer-backdrop.threetide-hidden-on-login {
     display: none !important;
     pointer-events: none !important;
 }
 
-/* Player-Container muss über allen normalen Seiten liegen */
-
-.videoPlayerContainer {
-    position: fixed !important;
-    inset: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    z-index: 99990 !important;
-    background: #000 !important;
+html.threetide-login-active .skinHeader,
+body.threetide-login-active .skinHeader {
+    display: none !important;
 }
 
-    /* Tatsächliches Video */
+html.threetide-login-active body,
+body.threetide-login-active {
+    background: #050505 !important;
+}
 
-    .videoPlayerContainer video,
-    video.htmlVideoPlayer {
-        position: absolute !important;
-        inset: 0 !important;
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        width: 100% !important;
-        height: 100% !important;
-        max-width: none !important;
-        max-height: none !important;
-        z-index: 2 !important;
-        object-fit: contain !important;
-        background: #000 !important;
+    body.threetide-login-active .mainAnimatedPage,
+    body.threetide-login-active .page {
+        padding-top: 0 !important;
+        background: transparent !important;
     }
 
-/* Native Jellyfin-Steuerung über das Video legen */
+/* =========================================================
+   3Tide final overrides: login, details and player safety
+   ========================================================= */
+html.threetide-login-active,
+html.threetide-login-active body {
+    min-height: 100% !important;
+    overflow: auto !important;
+    background: #050505 !important;
+}
 
-#videoOsdPage {
+body.threetide-login-active .loginPage {
     position: fixed !important;
     inset: 0 !important;
+    display: grid !important;
+    place-items: center !important;
     width: 100vw !important;
-    height: 100vh !important;
-    z-index: 100000 !important;
+    min-height: 100dvh !important;
+    padding: 1.25rem !important;
+    overflow: auto !important;
+    background:
+        radial-gradient(circle at 78% 12%, rgba(229,9,20,.16), transparent 32%),
+        radial-gradient(circle at 18% 88%, rgba(105,0,12,.12), transparent 30%),
+        #050505 !important;
+}
+
+body.threetide-login-active .loginPage .readOnlyContent {
+    position: relative !important;
+    width: min(92vw, 460px) !important;
+    max-width: 460px !important;
+    margin: 0 auto !important;
+    padding: 7rem 2rem 2rem !important;
+    border: 1px solid rgba(255,255,255,.1) !important;
+    border-radius: 24px !important;
+    background: linear-gradient(155deg, rgba(24,24,24,.98), rgba(7,7,7,.98)) !important;
+    box-shadow: 0 32px 100px rgba(0,0,0,.72) !important;
+}
+
+body.threetide-login-active .loginPage .readOnlyContent::before {
+    content: "3Tide" !important;
+    position: absolute !important;
+    top: 1.45rem !important;
+    left: 50% !important;
+    color: #e50914 !important;
+    font-size: 3.45rem !important;
+    font-weight: 950 !important;
+    line-height: 1 !important;
+    letter-spacing: -.085em !important;
+    transform: translateX(-50%) !important;
+}
+
+body.threetide-login-active .loginPage h1,
+body.threetide-login-active .loginPage .pageTitle {
+    margin: 0 0 1.35rem !important;
+    text-align: center !important;
+    font-size: 1.45rem !important;
+}
+
+body.threetide-login-active .loginPage input {
+    min-height: 52px !important;
+    border: 1px solid rgba(255,255,255,.13) !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    background: rgba(255,255,255,.075) !important;
+    box-shadow: none !important;
+}
+
+body.threetide-login-active .loginPage input:focus {
+    border-color: #e50914 !important;
+    box-shadow: 0 0 0 3px rgba(229,9,20,.17) !important;
+}
+
+body.threetide-login-active .loginPage .btnSubmit,
+body.threetide-login-active .loginPage button[type="submit"] {
+    min-height: 52px !important;
+    border-radius: 8px !important;
+    background: #e50914 !important;
+}
+
+body.threetide-login-active .loginPage .btnQuick,
+body.threetide-login-active .loginPage .btnForgotPassword,
+body.threetide-login-active .loginPage .raised:not(.btnSubmit) {
+    width: 100% !important;
+    min-height: 48px !important;
+    margin-top: .65rem !important;
+    border: 1px solid rgba(255,255,255,.1) !important;
+    border-radius: 8px !important;
+    background: rgba(255,255,255,.07) !important;
+}
+
+/* Details: compact backdrop card with guaranteed poster. */
+.itemDetailPage.threetide-details-enhanced {
+    --threetide-details-backdrop: none;
+    background: #060606 !important;
+}
+
+.itemDetailPage.threetide-details-enhanced::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 0;
+    height: min(78vh, 850px);
+    background-image:
+        linear-gradient(90deg, rgba(0,0,0,.96), rgba(0,0,0,.68) 38%, rgba(0,0,0,.18) 74%),
+        linear-gradient(0deg, #060606 0%, transparent 48%),
+        var(--threetide-details-backdrop);
+    background-size: cover;
+    background-position: center 18%;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+.itemDetailPage.threetide-details-enhanced .detailPagePrimaryContainer {
+    position: relative !important;
+    z-index: 2 !important;
+    min-height: min(76vh, 820px) !important;
+    align-items: end !important;
+    overflow: visible !important;
     background: transparent !important;
 }
 
-/*
- * Keine opacity- oder visibility-Regeln für die OSD.
- * Das automatische Ausblenden übernimmt Jellyfin selbst.
- */
+.itemDetailPage.threetide-details-enhanced .detailImageContainer {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    aspect-ratio: 2 / 3 !important;
+    background: rgba(18,18,18,.9) !important;
+}
+
+.itemDetailPage.threetide-details-enhanced .detailImageContainer img,
+.itemDetailPage.threetide-details-enhanced .threetide-details-poster {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+/* Player must always sit above cached SPA pages. */
+html.threetide-player-active,
+html.threetide-player-active body {
+    overflow: hidden !important;
+    background: #000 !important;
+}
+
+html.threetide-player-active #threetide-hero,
+html.threetide-player-active .threetide-header,
+html.threetide-player-active .threetide-drawer-backdrop,
+html.threetide-player-active .homePage,
+html.threetide-player-active .view-home,
+html.threetide-player-active .homeSectionsContainer,
+html.threetide-player-active .itemDetailPage {
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+html.threetide-player-active #videoOsdPage,
+html.threetide-player-active .videoPlayerContainer,
+html.threetide-player-active video:not(.threetide-hero-preview-video) {
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+/* WICHTIG: .videoOsd / .videoOsdBottom hier NICHT mit opacity:1
+   erzwingen - sonst kann Jellyfin das OSD nie mehr ausblenden
+   und die Steuerung klebt dauerhaft ueber dem Film. */
+
+html.threetide-player-active .videoPlayerContainer,
+html.threetide-player-active #videoOsdPage {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+}
+
+html.threetide-player-active .videoPlayerContainer {
+    z-index: 99980 !important;
+    background: #000 !important;
+}
+
+html.threetide-player-active #videoOsdPage {
+    z-index: 99990 !important;
+    background: transparent !important;
+}
+
+@media (max-width: 700px) {
+    body.threetide-login-active .loginPage .readOnlyContent {
+        padding: 6.5rem 1.25rem 1.35rem !important;
+        border-radius: 18px !important;
+    }
+
+    .itemDetailPage.threetide-details-enhanced::before {
+        height: 60vh;
+    }
+}
+
+
+/* =========================================================
+   3Tide detail background preview clips
+   ========================================================= */
+.itemDetailPage.threetide-details-enhanced {
+    position: relative !important;
+    isolation: isolate;
+    overflow: hidden !important;
+}
+
+.itemDetailPage .threetide-details-preview-video {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: min(78vh, 850px);
+    opacity: 0;
+    object-fit: cover;
+    object-position: center 18%;
+    pointer-events: none;
+    transition: opacity 700ms ease;
+}
+
+.itemDetailPage .threetide-details-preview-video--active {
+    opacity: 1;
+}
+
+.itemDetailPage.threetide-details-has-preview::before {
+    background-image:
+        linear-gradient(90deg, rgba(0,0,0,.96), rgba(0,0,0,.68) 38%, rgba(0,0,0,.18) 74%),
+        linear-gradient(0deg, #060606 0%, transparent 48%) !important;
+}
+
+.itemDetailPage.threetide-details-enhanced::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 1;
+    height: min(78vh, 850px);
+    background:
+        linear-gradient(90deg, rgba(0,0,0,.94), rgba(0,0,0,.58) 38%, rgba(0,0,0,.08) 76%),
+        linear-gradient(0deg, #060606 0%, transparent 52%);
+    pointer-events: none;
+}
+
+.itemDetailPage.threetide-details-enhanced .detailPagePrimaryContainer,
+.itemDetailPage.threetide-details-enhanced .detailPageContent,
+.itemDetailPage.threetide-details-enhanced .detailPageSecondaryContainer {
+    position: relative !important;
+    z-index: 3 !important;
+}
+
+.threetide-details-back {
+    position: absolute;
+    top: clamp(1rem, 2.5vw, 2rem);
+    left: clamp(1rem, 2.5vw, 2rem);
+    z-index: 20;
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    padding: 0;
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 50%;
+    color: #fff;
+    background: rgba(0,0,0,.52);
+    backdrop-filter: blur(12px);
+    cursor: pointer;
+    transition: transform 160ms ease, background 160ms ease;
+}
+
+.threetide-details-back:hover,
+.threetide-details-back:focus-visible {
+    background: rgba(229,9,20,.88);
+    transform: scale(1.06);
+}
+
+@media (max-width: 700px) {
+    .itemDetailPage .threetide-details-preview-video,
+    .itemDetailPage.threetide-details-enhanced::after {
+        height: 60vh;
+    }
+
+    .threetide-details-back {
+        width: 42px;
+        height: 42px;
+    }
+}

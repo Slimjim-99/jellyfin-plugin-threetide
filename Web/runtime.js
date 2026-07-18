@@ -615,29 +615,54 @@
     const MODULE_START_MAX_ATTEMPTS = 20;
     const MODULE_START_RETRY_MS = 250;
 
+    function resolveModule(globalName) {
+        if (window[globalName]) {
+            return window[globalName];
+        }
+
+        const aliases = {
+            ThreeTideHero:
+                window.ThreeTide?.Hero ||
+                window.ThreeTide?.hero,
+
+            ThreeTideHome:
+                window.ThreeTide?.Home ||
+                window.ThreeTide?.home,
+
+            ThreeTideSearch:
+                window.ThreeTide?.Search ||
+                window.ThreeTide?.search
+        };
+
+        return aliases[globalName] || null;
+    }
+
     function startModule(
         globalName,
         scriptHint,
         attempt = 0
     ) {
-        const moduleApi = window[globalName];
+        const moduleApi = resolveModule(globalName);
 
         if (
             moduleApi &&
             typeof moduleApi.start === "function"
         ) {
             moduleApi.start();
+
+            console.info(
+                `[3Tide] ${globalName} gestartet.`
+            );
+
             return;
         }
 
         if (attempt >= MODULE_START_MAX_ATTEMPTS) {
             console.error(
-                `[3Tide] window.${globalName} wurde ` +
-                "nach mehreren Versuchen nicht " +
-                "gefunden. Pruefe, ob " +
-                `${scriptHint} in ` +
-                "IndexHtmlTransformation.cs VOR " +
-                "runtime.js injiziert wird."
+                `[3Tide] ${globalName} wurde nach mehreren ` +
+                `Versuchen nicht gefunden. Prüfe, ob ${scriptHint} ` +
+                `vor runtime.js injiziert wird oder einen ` +
+                `JavaScript-Syntaxfehler enthält.`
             );
 
             return;
@@ -652,13 +677,12 @@
             MODULE_START_RETRY_MS
         );
     }
-    window.ThreeTide?.Api?.init();
-    window.ThreeTide?.UI?.init();
-    window.ThreeTide?.Discover?.init();
 
-    window.ThreeTideHero?.start();
-    window.ThreeTideHome?.start();
-    startModule("ThreeTideHero", "hero.js");
+    window.ThreeTide?.Api?.init?.();
+    window.ThreeTide?.UI?.init?.();
+    window.ThreeTide?.Discover?.init?.();
+
+    startModule("ThreeTideHero", "Hero.js");
     startModule("ThreeTideHome", "home.js");
     startModule("ThreeTideSearch", "search.js");
 })();
